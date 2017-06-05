@@ -1,0 +1,3 @@
+graft skynet/templates
+graft skynet/static
+include skynet/schema.sql
