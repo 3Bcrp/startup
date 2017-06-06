@@ -1,10 +1,11 @@
 from skynet import app
 from skynet.skynet import *
 from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash, Markup
+    render_template, flash, Markup
 from flask_admin import *
 import logging
 from logging.handlers import RotatingFileHandler
+import skynet.models
 
 
 @app.route('/')
@@ -22,7 +23,7 @@ def add_entry():
         abort(401)
     db = get_db()
     db.execute('insert into entries (title, text) values (?, ?)',
-                [request.form['title'], request.form['text']])
+               [request.form['title'], request.form['text']])
     db.commit()
     flash('New entry was successfully posted')
     app.logger.debug('new info added')
@@ -54,18 +55,19 @@ def logout():
     app.logger.debug('we are logged out')
     return redirect(url_for('show_entries'))
 
-#Setup the logger
-file_handler = logging.FileHandler('logs/apperror.log')
+
+# Setup the logger
+file_handler = logging.FileHandler('skynet/logs/apperror.log')
 handler = logging.StreamHandler()
 file_handler.setLevel(logging.DEBUG)
 handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(logging.Formatter(
     '%(asctime)s %(levelname)s: %(message)s '
     '[in %(pathname)s:%(lineno)d]'
- ))
+))
 handler.setFormatter(logging.Formatter(
     '%(asctime)s %(levelname)s: %(message)s '
     '[in %(pathname)s:%(lineno)d]'
- ))
+))
 app.logger.addHandler(handler)
 app.logger.addHandler(file_handler)
