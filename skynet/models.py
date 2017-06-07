@@ -1,16 +1,8 @@
-import os
-import os.path as op
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-
 from wtforms import validators
-
-import flask_admin as admin
 from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
-from skynet import app
 from skynet.skynet import *
-
 
 
 # Create dummy secrey key so we can use sessions
@@ -143,16 +135,6 @@ class TreeView(sqla.ModelView):
     form_excluded_columns = ['children', ]
 
 
-# Create admin
-admin = admin.Admin(app, name='Skynet: admin', template_mode='bootstrap3')
-
-# Add views
-admin.add_view(UserAdmin(User, db.session))
-admin.add_view(sqla.ModelView(Tag, db.session))
-admin.add_view(PostAdmin(db.session))
-admin.add_view(TreeView(Tree, db.session))
-
-
 def build_sample_db():
     """
     Populate a small db with some example entries.
@@ -260,13 +242,3 @@ def build_sample_db():
 
     db.session.commit()
     return
-
-if __name__ == '__main__':
-    # Build a sample db on the fly, if one does not exist yet.
-    app_dir = op.realpath(os.path.dirname(__file__))
-    database_path = op.join(app_dir, app.config['DATABASE_FILE'])
-    if not os.path.exists(database_path):
-        build_sample_db()
-
-    # Start app
-    app.run(debug=True)

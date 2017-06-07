@@ -1,11 +1,20 @@
 from skynet import app
+from skynet.models import UserAdmin, PostAdmin, TreeView, User, db, Tag, Tree
 from skynet.skynet import *
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash, Markup
-from flask_admin import *
 import logging
-from logging.handlers import RotatingFileHandler
-import skynet.models
+import flask_admin as admin
+from flask_admin.contrib import sqla
+
+
+# Create admin
+adminConsole = admin.Admin(app, name='Skynet: admin', template_mode='bootstrap3')
+# Creating views
+adminConsole.add_view(UserAdmin(User, db.session))
+adminConsole.add_view(sqla.ModelView(Tag, db.session))
+adminConsole.add_view(PostAdmin(db.session))
+adminConsole.add_view(TreeView(Tree, db.session))
 
 
 @app.route('/')
