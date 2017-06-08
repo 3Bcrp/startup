@@ -1,5 +1,8 @@
+from wtforms import Form, TextField
+from wtforms import validators
+
 from skynet import app
-from skynet.models import UserAdmin, PostAdmin, TreeView, User, db, Tag, Tree
+from skynet.models import UserAdmin, PostAdmin, TreeView, User, db, Tag, Tree, lala, lolo
 from skynet.skynet import *
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash, Markup
@@ -15,6 +18,7 @@ adminConsole.add_view(UserAdmin(User, db.session))
 adminConsole.add_view(sqla.ModelView(Tag, db.session))
 adminConsole.add_view(PostAdmin(db.session))
 adminConsole.add_view(TreeView(Tree, db.session))
+adminConsole.add_view(lala(lolo, db.session))
 
 
 @app.route('/')
@@ -24,6 +28,42 @@ def show_entries():
     entries = cur.fetchall()
     app.logger.debug('we are in the root')
     return render_template('show_entries.html', entries=entries)
+
+
+@app.route('/boot')
+def boot():
+    app.logger.debug('we are in the boot')
+    return render_template('index.html')
+
+
+class ReusableForm(Form):
+    name = TextField('Name:', validators=[validators.required()])
+    email = TextField('Email:', validators=[validators.required(), validators.Length(min=6, max=35)])
+    password = TextField('Password:', validators=[validators.required(), validators.Length(min=3, max=35)])
+
+    def reset(self):
+        from werkzeug.datastructures import MultiDict
+        blankData = MultiDict([('csrf', self.reset_csrf())])
+        self.process(blankData)
+
+
+@app.route("/hello", methods=['GET', 'POST'])
+def hello():
+    form = ReusableForm(request.form)
+
+    print(form.errors)
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+
+        if form.validate():
+            # Save the comment here.
+            flash('Hello ' + name)
+        else:
+            flash('Error: All the form fields are required. ')
+
+    return render_template('hello.html', form=form)
 
 
 @app.route('/add', methods=['POST'])

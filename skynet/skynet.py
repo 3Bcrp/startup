@@ -1,4 +1,5 @@
 import skynet
+from flask_bootstrap import Bootstrap
 import sqlite3
 import os
 from builtins import dict
@@ -18,6 +19,11 @@ app.config.update(dict(
     PASSWORD='default'
 ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+
+
+def create_app():
+    Bootstrap(app)
+    return app
 
 
 def connect_db():

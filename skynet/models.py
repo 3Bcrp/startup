@@ -79,6 +79,15 @@ class Tree(db.Model):
     def __str__(self):
         return self.name
 
+class lolo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+    parent_id = db.Column(db.Integer, db.ForeignKey('lolo.id'))
+    parent = db.relationship('lolo', remote_side=[id], backref='children')
+
+    def __str__(self):
+        return self.name
+
 
 # # # Flask views
 # @app.route('/models')
@@ -132,6 +141,10 @@ class PostAdmin(sqla.ModelView):
 
 
 class TreeView(sqla.ModelView):
+    form_excluded_columns = ['children', ]
+
+
+class lala(sqla.ModelView):
     form_excluded_columns = ['children', ]
 
 
@@ -236,6 +249,20 @@ def build_sample_db():
         db.session.add(branch)
         for j in range(5):
             leaf = Tree()
+            leaf.name = "Leaf " + str(j+1)
+            leaf.parent = branch
+            db.session.add(leaf)
+
+    # Create a sample lolo structure
+    trunk = lolo(name="Trunk")
+    db.session.add(trunk)
+    for i in range(5):
+        branch = lolo()
+        branch.name = "Branch " + str(i+1)
+        branch.parent = trunk
+        db.session.add(branch)
+        for j in range(5):
+            leaf = lolo()
             leaf.name = "Leaf " + str(j+1)
             leaf.parent = branch
             db.session.add(leaf)
