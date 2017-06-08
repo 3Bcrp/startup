@@ -1,42 +1,35 @@
-from skynet import app
-from skynet.models import UserAdmin, PostAdmin, TreeView, User, db, Tag, Tree
-from skynet.skynet import *
+from skynet import *
+from skynet.models import *
+
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash, Markup
+from flask_admin import *
+
 import logging
-import flask_admin as admin
-from flask_admin.contrib import sqla
-
-
-# Create admin
-adminConsole = admin.Admin(app, name='Skynet: admin', template_mode='bootstrap3')
-# Creating views
-adminConsole.add_view(UserAdmin(User, db.session))
-adminConsole.add_view(sqla.ModelView(Tag, db.session))
-adminConsole.add_view(PostAdmin(db.session))
-adminConsole.add_view(TreeView(Tree, db.session))
+from logging.handlers import RotatingFileHandler
 
 
 @app.route('/')
-def show_entries():
-    db = get_db()
-    cur = db.execute('select title, text from entries order by id desc')
-    entries = cur.fetchall()
+def show_posts():
+    posts = Post.query.all()
     app.logger.debug('we are in the root')
-    return render_template('show_entries.html', entries=entries)
+    return render_template('show_posts.html', posts=posts)
 
 
 @app.route('/add', methods=['POST'])
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
-    db = get_db()
-    db.execute('insert into entries (title, text) values (?, ?)',
-               [request.form['title'], request.form['text']])
-    db.commit()
+
+    title = request.form['title']
+    text = request.form['text']
+
+    db.session.add(Post(title, text))
+    db.session.commit()
+
     flash('New entry was successfully posted')
     app.logger.debug('new info added')
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('show_posts'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -53,7 +46,7 @@ def login():
             session['logged_in'] = True
             flash('You were logged in')
             app.logger.debug('we are logged in')
-            return redirect(url_for('show_entries'))
+            return redirect(url_for('show_posts'))
     return render_template('login.html', error=error)
 
 

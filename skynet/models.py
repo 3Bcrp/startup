@@ -1,18 +1,15 @@
+import os
+import os.path as op
+
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from wtforms import validators
+import flask_admin as admin
 from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
+
+from wtforms import validators
+
 from skynet.skynet import *
-
-
-# Create dummy secrey key so we can use sessions
-app.config['SECRET_KEY'] = '123456790'
-
-# Create in-memory database
-app.config['DATABASE_FILE'] = 'sample_db.sqlite'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.config['DATABASE_FILE']
-app.config['SQLALCHEMY_ECHO'] = True
-db = SQLAlchemy(app)
 
 
 # Create models
@@ -135,6 +132,16 @@ class TreeView(sqla.ModelView):
     form_excluded_columns = ['children', ]
 
 
+# Create admin
+admin = admin.Admin(app, name='Skynet: admin', template_mode='bootstrap3')
+
+# Add views
+admin.add_view(UserAdmin(User, db.session))
+admin.add_view(sqla.ModelView(Tag, db.session))
+admin.add_view(PostAdmin(db.session))
+admin.add_view(TreeView(Tree, db.session))
+
+
 def build_sample_db():
     """
     Populate a small db with some example entries.
@@ -242,3 +249,7 @@ def build_sample_db():
 
     db.session.commit()
     return
+
+if __name__ == '__main__':
+    # Make migration
+    db.create_all()

@@ -1,0 +1,6 @@
+# Ignore python byte-code
+__pycache__/
+
+# Ignore IDEA config files
+.idea
+

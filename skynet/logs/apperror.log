@@ -42,3 +42,6 @@
 2017-06-06 16:29:47,471 DEBUG: we are in the root [in /Users/Andrey/PycharmProjects/skynet/skynet/views.py:16]
 2017-06-06 16:36:24,019 DEBUG: we are in the root [in /Users/Andrey/PycharmProjects/skynet/skynet/views.py:16]
 2017-06-06 16:36:24,287 DEBUG: we are in the root [in /Users/Andrey/PycharmProjects/skynet/skynet/views.py:16]
+2017-06-08 17:22:47,662 DEBUG: we are in the root [in /home/s002/dev/skynet/skynet/views.py:15]
+2017-06-08 17:22:50,892 DEBUG: we are in the root [in /home/s002/dev/skynet/skynet/views.py:15]
+2017-06-08 17:23:26,706 DEBUG: we are in the root [in /home/s002/dev/skynet/skynet/views.py:15]
