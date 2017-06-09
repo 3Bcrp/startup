@@ -1,5 +1,7 @@
 # default settings
 SECRET_KEY = '123456790'
+USERNAME = 'test'
+PASSWORD = 'test'
 
 # postgresql settings
 POSTGRESQL_DATABASE_DATABASE = 'skynet_db'

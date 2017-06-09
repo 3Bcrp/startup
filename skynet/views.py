@@ -23,8 +23,10 @@ def add_entry():
 
     title = request.form['title']
     text = request.form['text']
-
-    db.session.add(Post(title, text))
+    
+    msg = Post(title, text)
+    
+    db.session.add(msg)
     db.session.commit()
 
     flash('New entry was successfully posted')
@@ -36,10 +38,15 @@ def add_entry():
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME']:
+        username = request.form['username']
+        password = request.form['password']
+        
+        user_inf = User.query.filter_by(username=username).first()
+
+        if user_inf is None:
             error = 'Invalid username'
             app.logger.debug('invalid uname')
-        elif request.form['password'] != app.config['PASSWORD']:
+        elif password != user_inf.password:
             error = 'Invalid password'
             app.logger.debug('invalid pswd')
         else:
@@ -55,7 +62,7 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     app.logger.debug('we are logged out')
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('show_posts'))
 
 
 # Setup the logger
