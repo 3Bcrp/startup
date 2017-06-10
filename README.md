@@ -8,9 +8,14 @@ Because we can.
 # How to start
 
 * install docker-engine
-* run `./.start.sh version_from_repository`
+* run `./.start.sh`
+* type `version_to_checkout`
 
-for example: `./.start.sh development`
+for example: 
+
+`$ ./.start.shdevelopment`
+
+`$ master`
 
 # Under the hood
 

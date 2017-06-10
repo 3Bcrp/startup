@@ -1,6 +1,8 @@
 from skynet import *
 from skynet.models import *
 
+import datetime
+
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash, Markup
 from flask_admin import *
@@ -17,14 +19,15 @@ def show_posts():
 
 
 @app.route('/add', methods=['POST'])
-def add_entry():
+def add_post():
     if not session.get('logged_in'):
         abort(401)
 
     title = request.form['title']
     text = request.form['text']
+    date = datetime.datetime.now()
     
-    msg = Post(title, text)
+    msg = Post(title, text,date)
     
     db.session.add(msg)
     db.session.commit()
@@ -37,6 +40,7 @@ def add_entry():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
+    
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -54,6 +58,7 @@ def login():
             flash('You were logged in')
             app.logger.debug('we are logged in')
             return redirect(url_for('show_posts'))
+        
     return render_template('login.html', error=error)
 
 
