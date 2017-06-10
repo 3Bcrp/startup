@@ -8,9 +8,9 @@ Because we can.
 # How to start
 
 * install docker-engine
-* run `docker-compose up -d` in skynet root directory
-* run `python3 ./skynet/models.py`
-* run `python3 runserver.py`
+* run `./.start.sh version_from_repository`
+
+for example: `./.start.sh development`
 
 # Under the hood
 
