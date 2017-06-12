@@ -21,19 +21,23 @@ adminConsole.add_view(TreeView(Tree, db.session))
 adminConsole.add_view(lala(lolo, db.session))
 
 
+# @app.route('/')
+# def show_entries():
+#     db = get_db()
+#     cur = db.execute('select title, text from entries order by id desc')
+#     entries = cur.fetchall()
+#     app.logger.debug('we are in the root')
+#     return render_template('show_entries.html', entries=entries)
+
+
 @app.route('/')
-def show_entries():
-    db = get_db()
-    cur = db.execute('select title, text from entries order by id desc')
-    entries = cur.fetchall()
+def root():
+    xz = ('la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la')
+    print(type(xz))
+    title = 'root'
+    username = 'Vasya Huev'
     app.logger.debug('we are in the root')
-    return render_template('show_entries.html', entries=entries)
-
-
-@app.route('/boot')
-def boot():
-    app.logger.debug('we are in the boot')
-    return render_template('index.html')
+    return render_template('index.html', title = title, xz = xz, username = username)
 
 
 class ReusableForm(Form):
