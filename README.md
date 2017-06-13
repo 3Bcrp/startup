@@ -13,7 +13,7 @@ Because we can.
 
 for example: 
 
-`$ ./.start.shdevelopment`
+`$ ./.start.sh`
 
 `$ master`
 

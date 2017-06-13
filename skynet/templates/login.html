@@ -1,13 +1,32 @@
+<html>
+    <head>
+       <title>Reusable Form Demo</title>
+       <link rel="stylesheet" media="screen" href ="static/css/bootstrap.min.css">
+       <link rel="stylesheet" href="static/css/bootstrap-theme.min.css">
+       <meta name="viewport" content = "width=device-width, initial-scale=1.0">
+
+    </head>
+
+
 {% block body %}
     {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
     {% if session['logged_in'] %}
     <p>You're logged in already!</p>
     <a href="show_posts">Return</a>
     {% else %}
+    <div class="container">
     <form action="/login" method="POST">
-      <input type="username" name="username" placeholder="Username">
+    <h2>Please log in!</h2>
+    <div class="row">
+          <input type="username" name="username" placeholder="Username">
+    </div>
+    <br>
+    <div class="row">
       <input type="password" name="password" placeholder="Password">
-      <input type="submit" value="Log in">
+    </div>
+    <br>
+      <button type="submit" class="btn btn-success">Log in</button>
     </form>
+    </div>
     {% endif %}
 {% endblock %}

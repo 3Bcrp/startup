@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
     <head>
-        <title>Reusable Form Demo</title>
-       <link rel="stylesheet" media="screen" href ="static/dist/css/bootstrap.min.css">
-       <link rel="stylesheet" href="static/dist/css/bootstrap-theme.min.css">
+       <title>Reusable Form Demo</title>
+       <link rel="stylesheet" media="screen" href ="static/css/bootstrap.min.css">
+       <link rel="stylesheet" href="static/css/bootstrap-theme.min.css">
        <meta name="viewport" content = "width=device-width, initial-scale=1.0">
 
     </head>
@@ -15,12 +15,17 @@
 
   <h2>Please sign up!</h2>
     <form action="/sign_up" method="POST">
-      <input type="username" name="username" placeholder="Username">
-      <input type="password" name="password" placeholder="Password">
-
-
+    <div class="row">
+          <input type="username" name="username" placeholder="Username">
     </div>
+    <br>
+    <div class="row">
+      <input type="password" name="password" placeholder="Password">
+    </div>
+    <br>
+
     <button type="submit" class="btn btn-success">Sign Up</button>
+    </div>
   </form>
 
   <br>

@@ -28,7 +28,6 @@ class ReusableForm(Form):
 
 @app.route('/')
 def root():
-    app.logger.debug('we are in the root')
     if not session.get('logged_in'):
         return redirect(url_for('sign_up'))
     else:
@@ -40,7 +39,7 @@ def root():
 def sign_up():
     error = None
     
-    #form = ReusableForm(request.form)
+    form = ReusableForm(request.form)
     if request.method == 'POST':
         app.logger.debug('sign_up POST method')
         username = request.form['username']

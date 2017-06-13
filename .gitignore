@@ -5,7 +5,6 @@ __pycache__/
 .idea/
 
 # Ignore log files
-skynet/logs/
 *.log
 
 # Ignore sqlite files
