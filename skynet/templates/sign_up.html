@@ -13,18 +13,10 @@
 <div class="container">
 
 
-  <h2>Flask Web Form</h2>
-  <form  action="" method="post" role="form">
-    {{ form.csrf }}
-    <div class="form-group">
-      <label for="name">Name:</label>
-      <input type="text" class="form-control" id="name" name="name" placeholder="What's your name?">
-      <br>
-      <label for="email">Email:</label>
-      <input type="text" class="form-control" id="email" name="email" placeholder="Your email will be used to contact you.">
-      <br>
-      <label for="password">Password:</label>
-      <input type="password" class="form-control" id="password" name="password" placeholder="Enter a password.">
+  <h2>Please sign up!</h2>
+    <form action="/sign_up" method="POST">
+      <input type="username" name="username" placeholder="Username">
+      <input type="password" name="password" placeholder="Password">
 
 
     </div>

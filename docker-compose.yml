@@ -1,0 +1,11 @@
+version: '2'
+services:
+    db:
+        image: postgres:9.6-alpine
+        environment:
+            POSTGRES_DB: skynet_db
+            POSTGRES_USER: skynet_admin
+            POSTGRES_PASSWORD: skynet_pass
+        ports:
+            - 5432:5432
+        tty: true

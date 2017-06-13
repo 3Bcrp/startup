@@ -1,42 +1,23 @@
+from skynet import *
+from skynet.models import *
+
 from wtforms import Form, TextField
 from wtforms import validators
 
-from skynet import app
-from skynet.models import UserAdmin, PostAdmin, TreeView, User, db, Tag, Tree, lala, lolo
-from skynet.skynet import *
+import datetime
+
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash, Markup
-import logging
-import flask_admin as admin
+from flask_admin import *
+
 from flask_login import login_required
-from flask_admin.contrib import sqla
 
-
-# Create admin
-adminConsole = admin.Admin(app, name='Skynet: admin', template_mode='bootstrap3')
-# Creating views
-adminConsole.add_view(UserAdmin(User, db.session))
-adminConsole.add_view(sqla.ModelView(Tag, db.session))
-adminConsole.add_view(PostAdmin(db.session))
-adminConsole.add_view(TreeView(Tree, db.session))
-adminConsole.add_view(lala(lolo, db.session))
-
-
-@app.route('/')
-def root():
-    xz = ('la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la')
-    title = 'root'
-    usern = 'Vasya Huev'
-    app.logger.debug('we are in the root')
-    if not session.get('logged_in'):
-        return render_template('login.html')
-    else:
-        return render_template('index.html', title=title, xz=xz, usern=usern)
+import logging
+from logging.handlers import RotatingFileHandler
 
 
 class ReusableForm(Form):
     name = TextField('Name:', validators=[validators.required()])
-    email = TextField('Email:', validators=[validators.required(), validators.Length(min=6, max=35)])
     password = TextField('Password:', validators=[validators.required(), validators.Length(min=3, max=35)])
 
     def reset(self):
@@ -45,65 +26,94 @@ class ReusableForm(Form):
         self.process(blankData)
 
 
-@app.route("/hello", methods=['GET', 'POST'])
-def hello():
-    form = ReusableForm(request.form)
+@app.route('/')
+def root():
+    app.logger.debug('we are in the root')
+    if not session.get('logged_in'):
+        return redirect(url_for('sign_up'))
+    else:
+        username = session.get('username')
+        return render_template('index.html', username=username)
 
-    print(form.errors)
+
+@app.route("/sign_up", methods=['GET', 'POST'])
+def sign_up():
+    error = None
+    
+    #form = ReusableForm(request.form)
     if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
+        app.logger.debug('sign_up POST method')
+        username = request.form['username']
         password = request.form['password']
-
+        
+        app.logger.debug('data accepted')
+        msg = User(username, password)
+    
+        app.logger.debug('db commiting')
+        db.session.add(msg)
+        db.session.commit()
+        
+        app.logger.debug('success')
         if form.validate():
             # Save the comment here.
-            flash('Hello ' + name)
+            session['logged_in'] = True
+            flash('Hello ' + username)
         else:
             flash('Error: All the form fields are required. ')
-    return render_template('hello.html', form=form)
+        return render_template('index.html', username=username)
+    return render_template('sign_up.html', error=error)
 
 
-@app.route('/show_entries')
-def show_entries():
-    db = get_db()
-    usern = 'Vasya Huev'
-    cur = db.execute('select title, text from entries order by id desc')
-    entries = cur.fetchall()
+@app.route('/show_posts')
+def show_posts():
     app.logger.debug('we are in the root')
     if not session.get('logged_in'):
         return render_template('login.html')
     else:
-        return render_template('show_entries.html', entries=entries,usern=usern)
+        return render_template('show_posts.html')
 
 
 @app.route('/add', methods=['POST'])
-def add_entry():
+def add_post():
     if not session.get('logged_in'):
         abort(401)
-    db = get_db()
-    db.execute('insert into entries (title, text) values (?, ?)',
-               [request.form['title'], request.form['text']])
-    db.commit()
+
+    title = request.form['title']
+    text = request.form['text']
+    date = datetime.datetime.now()
+    
+    msg = Post(title, text,date)
+    
+    db.session.add(msg)
+    db.session.commit()
+
     flash('New entry was successfully posted')
     app.logger.debug('new info added')
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('show_posts'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
+    
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME']:
+        username = request.form['username']
+        password = request.form['password']
+        
+        user_inf = User.query.filter_by(username=username).first()
+
+        if user_inf is None:
             error = 'Invalid username'
             app.logger.debug('invalid uname')
-        elif request.form['password'] != app.config['PASSWORD']:
+        elif password != user_inf.password:
             error = 'Invalid password'
             app.logger.debug('invalid pswd')
         else:
             session['logged_in'] = True
             flash('You were logged in')
             app.logger.debug('we are logged in')
-            return redirect(url_for('show_entries'))
+            return redirect(url_for('show_posts'))
+        
     return render_template('login.html', error=error)
 
 

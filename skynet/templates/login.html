@@ -2,7 +2,7 @@
     {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
     {% if session['logged_in'] %}
     <p>You're logged in already!</p>
-    <a href="show_entries">Return</a>
+    <a href="show_posts">Return</a>
     {% else %}
     <form action="/login" method="POST">
       <input type="username" name="username" placeholder="Username">

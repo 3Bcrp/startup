@@ -1,0 +1,13 @@
+# Ignore python byte-code
+__pycache__/
+
+# Ignore IDEA config files
+.idea/
+
+# Ignore log files
+skynet/logs/
+*.log
+
+# Ignore sqlite files
+*.db
+*.sqlite
