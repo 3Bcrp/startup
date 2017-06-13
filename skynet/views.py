@@ -1,21 +1,76 @@
 from skynet import *
 from skynet.models import *
 
+from wtforms import Form, TextField
+from wtforms import validators
+
 import datetime
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash, Markup
 from flask_admin import *
 
+from flask_login import login_required
+
 import logging
 from logging.handlers import RotatingFileHandler
 
 
+class ReusableForm(Form):
+    name = TextField('Name:', validators=[validators.required()])
+    password = TextField('Password:', validators=[validators.required(), validators.Length(min=3, max=35)])
+
+    def reset(self):
+        from werkzeug.datastructures import MultiDict
+        blankData = MultiDict([('csrf', self.reset_csrf())])
+        self.process(blankData)
+
+
 @app.route('/')
-def show_posts():
-    posts = Post.query.all()
+def root():
     app.logger.debug('we are in the root')
-    return render_template('show_posts.html', posts=posts)
+    if not session.get('logged_in'):
+        return redirect(url_for('sign_up'))
+    else:
+        username = session.get('username')
+        return render_template('index.html', username=username)
+
+
+@app.route("/sign_up", methods=['GET', 'POST'])
+def sign_up():
+    error = None
+    
+    #form = ReusableForm(request.form)
+    if request.method == 'POST':
+        app.logger.debug('sign_up POST method')
+        username = request.form['username']
+        password = request.form['password']
+        
+        app.logger.debug('data accepted')
+        msg = User(username, password)
+    
+        app.logger.debug('db commiting')
+        db.session.add(msg)
+        db.session.commit()
+        
+        app.logger.debug('success')
+        if form.validate():
+            # Save the comment here.
+            session['logged_in'] = True
+            flash('Hello ' + username)
+        else:
+            flash('Error: All the form fields are required. ')
+        return render_template('index.html', username=username)
+    return render_template('sign_up.html', error=error)
+
+
+@app.route('/show_posts')
+def show_posts():
+    app.logger.debug('we are in the root')
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    else:
+        return render_template('show_posts.html')
 
 
 @app.route('/add', methods=['POST'])
@@ -67,7 +122,7 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     app.logger.debug('we are logged out')
-    return redirect(url_for('show_posts'))
+    return login()
 
 
 # Setup the logger
