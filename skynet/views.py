@@ -8,6 +8,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash, Markup
 import logging
 import flask_admin as admin
+from flask_login import login_required
 from flask_admin.contrib import sqla
 
 
@@ -21,23 +22,16 @@ adminConsole.add_view(TreeView(Tree, db.session))
 adminConsole.add_view(lala(lolo, db.session))
 
 
-# @app.route('/')
-# def show_entries():
-#     db = get_db()
-#     cur = db.execute('select title, text from entries order by id desc')
-#     entries = cur.fetchall()
-#     app.logger.debug('we are in the root')
-#     return render_template('show_entries.html', entries=entries)
-
-
 @app.route('/')
 def root():
     xz = ('la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la', 'la')
-    print(type(xz))
     title = 'root'
-    username = 'Vasya Huev'
+    usern = 'Vasya Huev'
     app.logger.debug('we are in the root')
-    return render_template('index.html', title = title, xz = xz, username = username)
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    else:
+        return render_template('index.html', title=title, xz=xz, usern=usern)
 
 
 class ReusableForm(Form):
@@ -66,8 +60,20 @@ def hello():
             flash('Hello ' + name)
         else:
             flash('Error: All the form fields are required. ')
-
     return render_template('hello.html', form=form)
+
+
+@app.route('/show_entries')
+def show_entries():
+    db = get_db()
+    usern = 'Vasya Huev'
+    cur = db.execute('select title, text from entries order by id desc')
+    entries = cur.fetchall()
+    app.logger.debug('we are in the root')
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    else:
+        return render_template('show_entries.html', entries=entries,usern=usern)
 
 
 @app.route('/add', methods=['POST'])
@@ -106,7 +112,7 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     app.logger.debug('we are logged out')
-    return redirect(url_for('show_entries'))
+    return login()
 
 
 # Setup the logger
