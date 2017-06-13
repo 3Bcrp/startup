@@ -15,6 +15,7 @@ app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
 
+
 # Create models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
