@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+<<<<<<< HEAD:skynet/templates/show_posts.html
   {% if session.logged_in %}
     <form action="{{ url_for('add_post') }}" method=post class=add-post>
       <dl>
@@ -19,4 +20,7 @@
   {% endfor %}
   </ul>
     <a href="/admin">Click me to get to Admin!</a>
+=======
+
+>>>>>>> origin:skynet/templates/show_entries.html
 {% endblock %}

@@ -5,6 +5,8 @@ try:
     from flask import Flask, request, session, g, redirect, url_for, abort, \
                       render_template, flash
 
+    from flask_bootstrap import Bootstrap
+
     from flask_sqlalchemy import SQLAlchemy
 except ImportError as err:
     print('Are you run "pip3 install -r requirements.txt in app root dir?"')

@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+    <head>
+        <title>Reusable Form Demo</title>
+       <link rel="stylesheet" media="screen" href ="static/dist/css/bootstrap.min.css">
+       <link rel="stylesheet" href="static/dist/css/bootstrap-theme.min.css">
+       <meta name="viewport" content = "width=device-width, initial-scale=1.0">
+
+    </head>
+    <body>
+
+
+<div class="container">
+
+
+  <h2>Please sign up!</h2>
+    <form action="/sign_up" method="POST">
+      <input type="username" name="username" placeholder="Username">
+      <input type="password" name="password" placeholder="Password">
+
+
+    </div>
+    <button type="submit" class="btn btn-success">Sign Up</button>
+  </form>
+
+  <br>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+
+        {% for message in messages %}
+            {% if "Error" not in message[1]: %}
+                <div class="alert alert-info">
+                <strong>Success! </strong> {{ message[1] }}
+                </div>
+            {% endif %}
+
+            {% if "Error" in message[1]: %}
+                <div class="alert alert-warning">
+                {{ message[1] }}
+                </div>
+            {% endif %}
+        {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+</div>
+</body>
+</html>
