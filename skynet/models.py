@@ -25,7 +25,7 @@ class User(db.Model):
         self.password = password
     
     def __str__(self):
-        return (self.username, self.password)
+        return self.username
 
 
 class Post(db.Model):
@@ -43,7 +43,7 @@ class Post(db.Model):
         self.date = date
 
     def __str__(self):
-        return (self.title, self.text, self.date)
+        return self.title
 
 
 # Customized User model admin

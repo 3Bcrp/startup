@@ -59,6 +59,9 @@ def sign_up():
             flash('Hello ' + username)
         else:
             flash('Error: All the form fields are required. ')
+            
+        session['username'] = username
+        app.logger.debug('user {} successfully login'.format(session.get('username')))
         return render_template('index.html', username=username)
     return render_template('sign_up.html', error=error)
 
@@ -103,14 +106,15 @@ def login():
 
         if user_inf is None:
             error = 'Invalid username'
-            app.logger.debug('invalid uname')
+            app.logger.debug('invalid uname'.format())
         elif password != user_inf.password:
             error = 'Invalid password'
             app.logger.debug('invalid pswd')
         else:
             session['logged_in'] = True
+            session['username'] = username
             flash('You were logged in')
-            app.logger.debug('we are logged in')
+            app.logger.debug('we are logged in as {}'.format(session.get('username')))
             return redirect(url_for('show_posts'))
         
     return render_template('login.html', error=error)
