@@ -18,3 +18,6 @@ app = Flask(__name__)
 # Load default config and override config from an environment variable
 app.config.from_pyfile('config.py', silent=False)
 db = SQLAlchemy(app)
+from flask_login import LoginManager
+login_manager = LoginManager()
+login_manager.init_app(app)

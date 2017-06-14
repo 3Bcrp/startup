@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 status_handler() {
     if [ "$?" = "0" ]; then
         echo "DONE"

@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{#{% extends "layout.html" %}#}
 {% block body %}
   {% if session.logged_in %}
     <form action="{{ url_for('add_post') }}" method=post class=add-post>
@@ -12,8 +12,8 @@
     </form>
   {% endif %}
   <ul class=posts>
-  {% for post in posts %}
-    <li><h2>{{ post.title }}</h2>{{ post.text|safe }}
+  {% for i in posts %}
+    <li><h2>{{ i.title }}</h2>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}

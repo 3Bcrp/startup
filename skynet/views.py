@@ -10,7 +10,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash, Markup
 from flask_admin import *
 
-from flask_login import login_required
+from flask_login import login_required, login_user
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -33,6 +33,12 @@ def root():
     else:
         username = session.get('username')
         return render_template('index.html', username=username)
+
+
+@app.route('/photos')
+def photos():
+    return render_template('photos.html')
+
 
 
 @app.route("/sign_up", methods=['GET', 'POST'])
@@ -97,11 +103,11 @@ def add_post():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
-    
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
+
         user_inf = User.query.filter_by(username=username).first()
 
         if user_inf is None:
@@ -116,7 +122,7 @@ def login():
             flash('You were logged in')
             app.logger.debug('we are logged in as {}'.format(session.get('username')))
             return redirect(url_for('show_posts'))
-        
+
     return render_template('login.html', error=error)
 
 
