@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
     <head>
-       <title>Reusable Form Demo</title>
+       <title>SIGN UP!!!</title>
        <link rel="stylesheet" media="screen" href ="static/css/bootstrap.min.css">
        <link rel="stylesheet" href="static/css/bootstrap-theme.min.css">
        <meta name="viewport" content = "width=device-width, initial-scale=1.0">
@@ -23,8 +23,9 @@
       <input type="password" name="password" placeholder="Password">
     </div>
     <br>
-
-    <button type="submit" class="btn btn-success">Sign Up</button>
+    <div class="row">
+      <button type="submit" class="btn btn-success">Sign Up</button>
+      <a href="{{ url_for('login')}}" class="btn btn-success">Login</a>
     </div>
   </form>
 

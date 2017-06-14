@@ -32,7 +32,19 @@ def root():
         return redirect(url_for('sign_up'))
     else:
         username = session.get('username')
-        return render_template('index.html', username=username)
+        return redirect(url_for('user', username=username))
+
+
+@app.route('/user/<username>')
+def user(username):
+    user = User.query.filter_by(username = username).first()
+    if user == None:
+        flash('User ' + username + ' not found.')
+        return redirect(url_for('login'))
+    posts = Post.query.filter_by(user_id = user.id).all()
+    return render_template('mypage.html',
+        user = user,
+        posts = posts)
 
 
 @app.route('/photos')
@@ -68,17 +80,8 @@ def sign_up():
             
         session['username'] = username
         app.logger.debug('user {} successfully login'.format(session.get('username')))
-        return render_template('index.html', username=username)
+        return redirect(url_for('user', username=username))
     return render_template('sign_up.html', error=error)
-
-
-@app.route('/show_posts')
-def show_posts():
-    app.logger.debug('we are in the root')
-    if not session.get('logged_in'):
-        return render_template('login.html')
-    else:
-        return render_template('show_posts.html')
 
 
 @app.route('/add', methods=['POST'])
@@ -121,7 +124,7 @@ def login():
             session['username'] = username
             flash('You were logged in')
             app.logger.debug('we are logged in as {}'.format(session.get('username')))
-            return redirect(url_for('show_posts'))
+            return redirect(url_for('user', username = username))
 
     return render_template('login.html', error=error)
 
@@ -131,7 +134,7 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     app.logger.debug('we are logged out')
-    return login()
+    return redirect(url_for('login'))
 
 
 # Setup the logger
