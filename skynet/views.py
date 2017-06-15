@@ -22,7 +22,9 @@ class ReusableForm(Form):
     name = TextField('Your name:', validators=[validators.required()])
     second_name = TextField('Second name:', validators=[validators.Length(min=3, max=35)])
     nick = TextField('Nick:')
-    city = TextField('City:', validators=[validators.required(), validators.Length(min=3, max=35)])
+    city = TextField('City:', validators=[validators.required(), validators.Length(min=2, max=35)])
+    role = TextField('Role:', default='user')
+
     def reset(self):
         from werkzeug.datastructures import MultiDict
         blankData = MultiDict([('csrf', self.reset_csrf())])
@@ -68,9 +70,9 @@ def sign_up():
         second_name = request.form['second_name']
         nick = request.form['nick']
         city = request.form['city']
-        
+
         app.logger.debug('data accepted')
-        msg = User(username, password, name, second_name, nick, city)
+        msg = User(username, password, name, second_name, nick, city, role='user')
     
         app.logger.debug('db commiting')
         db.session.add(msg)

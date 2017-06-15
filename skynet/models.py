@@ -18,19 +18,21 @@ except:
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
-    password = db.Column(db.String(80), unique=True)
+    password = db.Column(db.String(80), unique=False)
     name = db.Column(db.String(80), unique=False)
     second_name = db.Column(db.String(80), unique=False)
     nick = db.Column(db.String(80), unique=False)
     city = db.Column(db.String(80), unique=False)
+    role = db.Column(db.String(7),unique=False, default= 'user')
 
-    def __init__(self, username, password, name, second_name, nick, city):
+    def __init__(self, username, password, name, second_name, nick, city, role):
         self.username = username
         self.password = password
         self.name = name
         self.second_name = second_name
         self.nick = nick
         self.city = city
+        self.role = role
 
     def __str__(self):
         return self.username
@@ -74,3 +76,7 @@ admin.add_view(UserAdmin(Post, db.session))
 if __name__ == '__main__':
     # Make migration
     db.create_all()
+    adminUser = User(username='admin', password='1234', name='admin', second_name='adminov', nick='God blessed',
+              city='Admin City', role='admin')
+    db.session.add(adminUser)
+    db.session.commit()
