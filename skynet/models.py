@@ -19,11 +19,19 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(80), unique=True)
-    
-    def __init__(self, username, password):
+    name = db.Column(db.String(80), unique=False)
+    second_name = db.Column(db.String(80), unique=False)
+    nick = db.Column(db.String(80), unique=False)
+    city = db.Column(db.String(80), unique=False)
+
+    def __init__(self, username, password, name, second_name, nick, city):
         self.username = username
         self.password = password
-    
+        self.name = name
+        self.second_name = second_name
+        self.nick = nick
+        self.city = city
+
     def __str__(self):
         return self.username
 

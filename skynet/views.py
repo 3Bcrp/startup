@@ -17,9 +17,12 @@ from logging.handlers import RotatingFileHandler
 
 
 class ReusableForm(Form):
-    name = TextField('Name:', validators=[validators.required()])
+    username = TextField('User name:', validators=[validators.required()])
     password = TextField('Password:', validators=[validators.required(), validators.Length(min=3, max=35)])
-
+    name = TextField('Your name:', validators=[validators.required()])
+    second_name = TextField('Second name:', validators=[validators.Length(min=3, max=35)])
+    nick = TextField('Nick:')
+    city = TextField('City:', validators=[validators.required(), validators.Length(min=3, max=35)])
     def reset(self):
         from werkzeug.datastructures import MultiDict
         blankData = MultiDict([('csrf', self.reset_csrf())])
@@ -41,16 +44,15 @@ def user(username):
     if user == None:
         flash('User ' + username + ' not found.')
         return redirect(url_for('login'))
-    posts = Post.query.filter_by(user_id = user.id).all()
+    posts = Post.query.filter_by(user_id=user.id).all()
     return render_template('mypage.html',
-        user = user,
-        posts = posts)
+        user=user,
+        posts=posts)
 
 
 @app.route('/photos')
 def photos():
     return render_template('photos.html')
-
 
 
 @app.route("/sign_up", methods=['GET', 'POST'])
@@ -62,9 +64,13 @@ def sign_up():
         app.logger.debug('sign_up POST method')
         username = request.form['username']
         password = request.form['password']
+        name = request.form['name']
+        second_name = request.form['second_name']
+        nick = request.form['nick']
+        city = request.form['city']
         
         app.logger.debug('data accepted')
-        msg = User(username, password)
+        msg = User(username, password, name, second_name, nick, city)
     
         app.logger.debug('db commiting')
         db.session.add(msg)
@@ -83,24 +89,24 @@ def sign_up():
         return redirect(url_for('user', username=username))
     return render_template('sign_up.html', error=error)
 
-
-@app.route('/add', methods=['POST'])
-def add_post():
-    if not session.get('logged_in'):
-        abort(401)
-
-    title = request.form['title']
-    text = request.form['text']
-    date = datetime.datetime.now()
-    
-    msg = Post(title, text,date)
-    
-    db.session.add(msg)
-    db.session.commit()
-
-    flash('New entry was successfully posted')
-    app.logger.debug('new info added')
-    return redirect(url_for('show_posts'))
+#  To delete
+# @app.route('/add', methods=['POST'])
+# def add_post():
+#     if not session.get('logged_in'):
+#         abort(401)
+#
+#     title = request.form['title']
+#     text = request.form['text']
+#     date = datetime.datetime.now()
+#
+#     msg = Post(title, text,date)
+#
+#     db.session.add(msg)
+#     db.session.commit()
+#
+#     flash('New entry was successfully posted')
+#     app.logger.debug('new info added')
+#     return redirect(url_for('show_posts'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
