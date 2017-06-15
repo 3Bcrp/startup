@@ -1,3 +1,5 @@
+import sqlalchemy
+
 from skynet import *
 from skynet.models import *
 
@@ -60,7 +62,6 @@ def photos():
 @app.route("/sign_up", methods=['GET', 'POST'])
 def sign_up():
     error = None
-    
     form = ReusableForm(request.form)
     if request.method == 'POST':
         app.logger.debug('sign_up POST method')
@@ -75,20 +76,26 @@ def sign_up():
         msg = User(username, password, name, second_name, nick, city, role='user')
     
         app.logger.debug('db commiting')
-        db.session.add(msg)
-        db.session.commit()
-        
+        try:
+            db.session.add(msg)
+            db.session.commit()
+        except sqlalchemy.exc.IntegrityError:
+            flash('Error: ' + 'user ' + username + ' Already exists')
+            return render_template('sign_up.html', error=error)
         app.logger.debug('success')
         if form.validate():
+            # for i in User.query.filter_by(username=username).all():
+            #     if username == i.username:
+            #         flash('Error: ' + username + 'Already exists')
             # Save the comment here.
             session['logged_in'] = True
             flash('Hello ' + username)
+            return redirect(url_for('user', username=username))
         else:
             flash('Error: All the form fields are required. ')
             
         session['username'] = username
-        app.logger.debug('user {} successfully login'.format(session.get('username')))
-        return redirect(url_for('user', username=username))
+        # app.logger.debug('user {} successfully login'.format(session.get('username')))
     return render_template('sign_up.html', error=error)
 
 #  To delete
