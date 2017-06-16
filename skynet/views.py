@@ -1,21 +1,13 @@
-import sqlalchemy
-
-from skynet import *
-from skynet.models import *
-
-from wtforms import Form, TextField
-from wtforms import validators
-
-import datetime
-
-from flask import Flask, request, session, g, redirect, url_for, abort, \
-    render_template, flash, Markup
-from flask_admin import *
-
-from flask_login import login_required, login_user
-
 import logging
-from logging.handlers import RotatingFileHandler
+import sqlalchemy
+from flask import current_app
+from flask_login import login_user
+from wtforms import StringField, BooleanField, PasswordField, FieldList, TextField, TextAreaField, SelectField, validators, FileField
+from wtforms.validators import DataRequired, Length, URL, EqualTo, Email
+from flask.ext.wtf import Form
+from skynet.models import *
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+import flask_admin as admin
 
 
 class ReusableForm(Form):
@@ -33,6 +25,16 @@ class ReusableForm(Form):
         self.process(blankData)
 
 
+@login_manager.user_loader
+def load_user(userid):
+    return User.query.get(int(userid))
+
+
+@app.before_request
+def before_request():
+    g.user = current_user
+
+
 @app.route('/')
 def root():
     if not session.get('logged_in'):
@@ -42,12 +44,14 @@ def root():
         return redirect(url_for('user', username=username))
 
 
+
 @app.route('/user/<username>')
+@login_required
 def user(username):
     user = User.query.filter_by(username = username).first()
-    if user == None:
-        flash('User ' + username + ' not found.')
-        return redirect(url_for('login'))
+    # if user == None:
+    #     flash('User ' + username + ' not found.')
+    #     return redirect(url_for('login'))
     posts = Post.query.filter_by(user_id=user.id).all()
     return render_template('mypage.html',
         user=user,
@@ -98,36 +102,14 @@ def sign_up():
         # app.logger.debug('user {} successfully login'.format(session.get('username')))
     return render_template('sign_up.html', error=error)
 
-#  To delete
-# @app.route('/add', methods=['POST'])
-# def add_post():
-#     if not session.get('logged_in'):
-#         abort(401)
-#
-#     title = request.form['title']
-#     text = request.form['text']
-#     date = datetime.datetime.now()
-#
-#     msg = Post(title, text,date)
-#
-#     db.session.add(msg)
-#     db.session.commit()
-#
-#     flash('New entry was successfully posted')
-#     app.logger.debug('new info added')
-#     return redirect(url_for('show_posts'))
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
-
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-
         user_inf = User.query.filter_by(username=username).first()
-
         if user_inf is None:
             error = 'Invalid username'
             app.logger.debug('invalid uname'.format())
@@ -138,9 +120,10 @@ def login():
             session['logged_in'] = True
             session['username'] = username
             flash('You were logged in')
+            user = user_inf
+            login_user(user, force=True)
             app.logger.debug('we are logged in as {}'.format(session.get('username')))
             return redirect(url_for('user', username = username))
-
     return render_template('login.html', error=error)
 
 
@@ -149,6 +132,7 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     app.logger.debug('we are logged out')
+    logout_user()
     return redirect(url_for('login'))
 
 
