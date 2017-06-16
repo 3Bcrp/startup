@@ -6,13 +6,12 @@ from skynet.models import *
 from wtforms import Form, TextField
 from wtforms import validators
 
-import datetime
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash, Markup
 from flask_admin import *
 
-from flask_login import login_required, login_user
+# from flask_login import login_required, login_user
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -32,6 +31,10 @@ class ReusableForm(Form):
         blankData = MultiDict([('csrf', self.reset_csrf())])
         self.process(blankData)
 
+@login_manager.user_loader
+def load_user(userid):
+    return User.query.get(int(userid))
+
 
 @app.route('/')
 def root():
@@ -42,7 +45,7 @@ def root():
         return redirect(url_for('user', username=username))
 
 
-@app.route('/user/<username>')
+@app.route('/user/<username>', methods=['GET', 'POST'])
 def user(username):
     user = User.query.filter_by(username = username).first()
     if user == None:
@@ -58,6 +61,27 @@ def user(username):
 def photos():
     return render_template('photos.html')
 
+@app.route('/add_post', methods=['POST'])
+def add_post():
+    if not session.get('logged_in'):
+        abort(401)
+ 
+    current_user = User.query.filter_by(username = session.get('username')).first()
+    title = request.form['title']
+    text = request.form['text']
+    post_inf = Post(title=title,
+                    text=text,
+                    date=datetime.datetime.now(),
+                    user_id=current_user.id)
+    
+    current_user.post.append(post_inf)
+    
+    db.session.commit()
+    
+    flash('New entry was successfully posted')
+    app.logger.debug('new info added')
+    
+    return redirect(url_for('user', username=session.get('username')))
 
 @app.route("/sign_up", methods=['GET', 'POST'])
 def sign_up():
@@ -97,25 +121,6 @@ def sign_up():
         session['username'] = username
         # app.logger.debug('user {} successfully login'.format(session.get('username')))
     return render_template('sign_up.html', error=error)
-
-#  To delete
-# @app.route('/add', methods=['POST'])
-# def add_post():
-#     if not session.get('logged_in'):
-#         abort(401)
-#
-#     title = request.form['title']
-#     text = request.form['text']
-#     date = datetime.datetime.now()
-#
-#     msg = Post(title, text,date)
-#
-#     db.session.add(msg)
-#     db.session.commit()
-#
-#     flash('New entry was successfully posted')
-#     app.logger.debug('new info added')
-#     return redirect(url_for('show_posts'))
 
 
 @app.route('/login', methods=['GET', 'POST'])

@@ -7,6 +7,8 @@ import flask_admin as admin
 from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
 
+import datetime
+
 from wtforms import validators
 try:
     from skynet.skynet import *
@@ -16,6 +18,8 @@ except:
 
 # Create models
 class User(db.Model):
+    __tablename__ = 'user'
+    
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(80), unique=False)
@@ -24,36 +28,39 @@ class User(db.Model):
     nick = db.Column(db.String(80), unique=False)
     city = db.Column(db.String(80), unique=False)
     role = db.Column(db.String(7),unique=False, default= 'user')
+    
+    post = db.relationship("Post", backref="user", lazy="dynamic")
 
-    def __init__(self, username, password, name, second_name, nick, city, role):
-        self.username = username
-        self.password = password
-        self.name = name
-        self.second_name = second_name
-        self.nick = nick
-        self.city = city
-        self.role = role
+#    def __init__(self, username, password, name, second_name, nick, city, role):
+#        self.username = username
+#        self.password = password
+#        self.name = name
+#        self.second_name = second_name
+#        self.nick = nick
+#        self.city = city
+#        self.role = role
 
-    def __str__(self):
-        return self.username
+#    def __str__(self):
+#        return self.username
 
 
 class Post(db.Model):
+    __tablename__ = 'post'
+    
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     text = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
 
-    user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
-    user = db.relationship(User, backref='posts')
+#   def __init__(self, user_id, title, text):
+#        self.title = title
+#        self.text = text
+#        self.date = datetime.datetime.now()
+#        self.user_id = user_id
 
-    def __init__(self, title, text, date):
-        self.title = title
-        self.text = text
-        self.date = date
-
-    def __str__(self):
-        return self.title
+#    def __str__(self):
+#        return self.title
 
 
 # Customized User model admin
@@ -76,7 +83,9 @@ admin.add_view(UserAdmin(Post, db.session))
 if __name__ == '__main__':
     # Make migration
     db.create_all()
-    adminUser = User(username='admin', password='1234', name='admin', second_name='adminov', nick='God blessed',
-              city='Admin City', role='admin')
+    adminUser = User(username='admin', password='1234',
+                     name='admin', second_name='adminov',
+                     nick='God blessed', city='Admin City',
+                     role='admin')
     db.session.add(adminUser)
     db.session.commit()

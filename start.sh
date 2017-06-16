@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 status_handler() {
     if [ "$?" = "0" ]; then
         echo "DONE"
@@ -7,7 +7,6 @@ status_handler() {
         exit 1
     fi
 }
-
 
 echo "Type the version to start, followed by [ENTER]:"
 read version

@@ -1,4 +1,61 @@
 {% extends "layout.html" %}
 
-{% block body %}
+{% block content %}
+  <div class="container">
+    <div class="row-fluid">
+      <div class="block6">
+          <h2>{{ user.name.capitalize() }} {{ user.second_name.capitalize() }} aka {{ user.nick }}</h2>
+      </div>
+  
+      <div class="row-fluid">
+        <div class="block1">
+          <ul class="thumbnails" margin="0" align="center">
+              <a href="#" class="thumbnail">
+                <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="" class="img-rounded center-block" >
+              </a>
+          </ul>
+        </div>
+        <div class="span6 text-center">
+          <h2>Place map here?</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+{% endblock %}
+
+{% block posts %}
+  {% if session.logged_in %}
+    <form action="{{ url_for('add_post') }}" method=post class=add-post>
+      <div class=row>
+        <div class=col-lg-10>
+          <input type=text size=30 name=title placeholder="Title">
+        </div>
+      </div>
+        <br>
+      <div class=row>
+        <div class=col-lg-10>
+          <input name=text rows=5 cols=40 placeholder="Your text">
+        </div>
+      </div>
+      <br>
+      <div class=row>
+        <div class=col-lg-10>
+          <button type="submit" class="btn btn-success">Post!</button>
+        </div>
+      </div>
+    </form>
+  {% endif %}
+  <div class=row>
+    <ul class=posts>
+      {% for post in posts %}
+        <div class=col-lg-10>
+          <li><h2>{{ post.title.capitalize() }} on {{ post.date.strftime("%A, %d. %B %Y %I:%M %p") }}</h2>
+          <li><h4>{{ post.text }}</h4>
+        </div>
+      {% else %}
+        <li><em>Unbelievable.  No entries here so far</em>
+      {% endfor %}
+    </ul>
+  </div>
 {% endblock %}
