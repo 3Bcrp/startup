@@ -2,6 +2,7 @@ import os
 import os.path as op
 
 from flask import Flask
+from flask_login import login_required
 from flask_sqlalchemy import SQLAlchemy
 import flask_admin as admin
 from flask_admin.contrib import sqla
@@ -43,6 +44,18 @@ class User(db.Model):
 #    def __str__(self):
 #        return self.username
 
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
+
 
 class Post(db.Model):
     __tablename__ = 'post'
@@ -72,10 +85,8 @@ post_tags_table = db.Table('post_tags', db.Model.metadata,
                            db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
                            )
 
-
 # Create admin
 admin = admin.Admin(app, name='Skynet: admin', template_mode='bootstrap3')
-
 # Add views
 admin.add_view(UserAdmin(User, db.session))
 admin.add_view(UserAdmin(Post, db.session))

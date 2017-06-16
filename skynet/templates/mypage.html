@@ -1,7 +1,6 @@
 {% extends "layout.html" %}
 
 {% block content %}
-  <div class="container">
     <div class="row-fluid">
       <div class="block6">
           <h2>{{ user.name.capitalize() }} {{ user.second_name.capitalize() }} aka {{ user.nick }}</h2>
@@ -20,13 +19,15 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="container">
+<br>
 {% endblock %}
 
-{% block posts %}
+<div class=container>
+{% block user_content %}
+  <br>
   {% if session.logged_in %}
     <form action="{{ url_for('add_post') }}" method=post class=add-post>
+      {{ form.hidden_tag() }}
       <div class=row>
         <div class=col-lg-10>
           <input type=text size=30 name=title placeholder="Title">
@@ -45,6 +46,7 @@
         </div>
       </div>
     </form>
+  <br>
   {% endif %}
   <div class=row>
     <ul class=posts>
@@ -59,3 +61,4 @@
     </ul>
   </div>
 {% endblock %}
+</div>

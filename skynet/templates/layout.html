@@ -57,6 +57,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav">
                 <li><a href="/admin">Admin</a></li>
+                {% if session.logged_in %}
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu <span class="caret"></span></a>
                   <ul class="dropdown-menu">
@@ -66,7 +67,7 @@
                     </li>
                     <li>
                         <span class="glyphicon glyphicon-camera" aria-hidden="true">
-                        <a href="/photos">Photos</a>
+                        <a href="{{ url_for('photos', username=session.get('username'))}}">Photos</a>
                     </li>
                     <li>
                         <span class="glyphicon glyphicon-facetime-video" aria-hidden="true">
@@ -86,28 +87,59 @@
                     </li>
                   </ul>
                 </li>
+                {% endif %}
               </ul>
               <form class="navbar-form navbar-left">
-                <div class="form-group">
-                  <input type="text" class="form-control" placeholder="Search user">
-                </div>
-                <button type="button" class="btn btn-default" aria-label="Search">
-                  <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                </button>
+                <form action="{{ url_for('user_search') }}" method="post" class="user_search">
+                  <div class="form-group">
+                    <input type="text" class="form-control" name="user-search" placeholder="Search user">
+                  </div>
+                  <a href="/user_search">
+                    <button type="button" class="btn btn-default" aria-label="Search">
+                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </button>
+                  </a>
+                </form>
               </form>
               <ul class="nav navbar-nav navbar-right">
+                {% if session.logged_in %}
                 <li><a href="/logout">Logout</a></li>
-                </li>
+                {% else %}
+                <li><a href="/login">Login</a></li>
+                {% endif %}
               </ul>
             </div><!-- /.navbar-collapse -->
           </div><!-- /.container-fluid -->
         </nav>
-
+        {% block flash %}
+        <div class="row">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if "Error" not in message[1]: %}
+                            <div class="alert alert-info">
+                              <strong>Success! </strong> {{ message[1] }}
+                            </div>
+                        {% endif %}
+                        {% if "Error" in message[1]: %}
+                            <div class="alert alert-warning">
+                              <strong>Error! </strong> {{ message[1] }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        {% endblock %}
+        <br>
+        <div class="container">
         {% block content %}{% endblock %}
-
-        {% block posts %}{% endblock %}
-
-
+        </div>
+        <br>
+        <div class="container">
+        {% block user_content %}{% endblock %}
+        </div>
+        <br>
       </div>
     </div>
 

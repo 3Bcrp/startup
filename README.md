@@ -8,7 +8,7 @@ Because we can.
 # How to start
 
 * install docker-engine
-* run `./.start.sh`
+* run `./start.sh`
 * type `version_to_checkout`
 
 for example: 

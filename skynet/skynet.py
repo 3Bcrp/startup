@@ -6,18 +6,23 @@ try:
                       render_template, flash
 
     from flask_bootstrap import Bootstrap
-
+    from flask_login import LoginManager
     from flask_sqlalchemy import SQLAlchemy
+    from flask_wtf import CSRFProtect
 except ImportError as err:
     print('Are you run "pip3 install -r requirements.txt in app root dir?"')
     raise err
 
+
+csrf = CSRFProtect()
  # create the application instance :)
 app = Flask(__name__)
 
 # Load default config and override config from an environment variable
 app.config.from_pyfile('config.py', silent=False)
+csrf.init_app(app)
 db = SQLAlchemy(app)
-from flask_login import LoginManager
+
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = 'login'
