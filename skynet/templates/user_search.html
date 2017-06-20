@@ -1,0 +1,18 @@
+{% extends "mypage.html" %}
+
+{% block user_content %}
+  {{ super() }}
+  <form action="{{ url_for('user_search') }}" method=post class=add-post>
+  {{ form.hidden_tag() }}
+  <div class=row>
+    <ul class=users>
+      {% for user in users %}
+        <div class=col-lg-10>
+          <li><h2>{{ user.username }} most known as {{ user.name.capitalize() }} {{ user.second_name.capitalize() }}</h2>
+        </div>
+      {% else %}
+        <li><em>Unbelievable.  No users here so far</em>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

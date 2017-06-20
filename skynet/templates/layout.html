@@ -30,6 +30,12 @@
             margin-top: 20px;
             width: 150px;
         }
+        .container {
+            background-color: #D4D4D4;
+            margin: 0px auto;
+            padding-right:24px;
+            padding-left:24px;
+        }
       </style>
   </head>
 
@@ -50,117 +56,91 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav">
-                <li class="active"><a href="/login">Login <span class="sr-only">(current)</span></a></li>
                 <li><a href="/admin">Admin</a></li>
+                {% if session.logged_in %}
                 <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu <span class="caret"></span></a>
                   <ul class="dropdown-menu">
-                    <li><a href="#">Action</a></li>
-                    <li><a href="#">Another action</a></li>
-                    <li><a href="#">Something else here</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">Separated link</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">One more separated link</a></li>
+                    <li>
+                        <span class="glyphicon glyphicon-home" aria-hidden="true">
+                        <a href="{{ url_for('root')}}">Home</a>
+                    </li>
+                    <li>
+                        <span class="glyphicon glyphicon-camera" aria-hidden="true">
+                        <a href="{{ url_for('photos', username=session.get('username'))}}">Photos</a>
+                    </li>
+                    <li>
+                        <span class="glyphicon glyphicon-facetime-video" aria-hidden="true">
+                        <a href="#">Videos</a>
+                    </li>
+                    <li>
+                        <span class="glyphicon glyphicon-user" aria-hidden="true">
+                        <a href="#">Friends</a>
+                    </li>
+                    <li>
+                        <span class="glyphicon glyphicon-map-marker" aria-hidden="true">
+                        <a href="#">Places</a>
+                    </li>
+                    <li>
+                        <span class="glyphicon glyphicon-cog" aria-hidden="true">
+                        <a href="#">Settings</a>
+                    </li>
                   </ul>
                 </li>
+                {% endif %}
               </ul>
               <form class="navbar-form navbar-left">
-                <div class="form-group">
-                  <input type="text" class="form-control" placeholder="Search">
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
+                <form action="{{ url_for('user_search') }}" method="post" class="user_search">
+                  <div class="form-group">
+                    <input type="text" class="form-control" name="user-search" placeholder="Search user">
+                  </div>
+                  <a href="/user_search">
+                    <button type="button" class="btn btn-default" aria-label="Search">
+                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </button>
+                  </a>
+                </form>
               </form>
               <ul class="nav navbar-nav navbar-right">
+                {% if session.logged_in %}
                 <li><a href="/logout">Logout</a></li>
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#">Action</a></li>
-                    <li><a href="#">Another action</a></li>
-                    <li><a href="#">Something else here</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">Separated link</a></li>
-                  </ul>
-                </li>
+                {% else %}
+                <li><a href="/login">Login</a></li>
+                {% endif %}
               </ul>
             </div><!-- /.navbar-collapse -->
           </div><!-- /.container-fluid -->
         </nav>
-
-
-    <div class="blockname">
-        <b>{{ user.name }} {{ user.second_name }} aka {{ user.nick }}</b>
-    </div>
-
-    <div class="block1">
-        <ul class="thumbnails">
-            <a href="#" class="thumbnail">
-              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="">
-            </a>
-        </ul>
-    </div>
-
-
-    <div class="block2">
-        {% block content %} {% endblock %}
-    </div>
-{#    <div class="block2">#}
-{#        <p><b>Pictures</b></p>#}
-{#        <div class="row">#}
-{#          <div class="col-xs-6 col-md-3">#}
-{#            <a href="#" class="thumbnail">#}
-{#              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">#}
-{#            </a>#}
-{#          </div>#}
-{#          <div class="col-xs-6 col-md-3">#}
-{#            <a href="#" class="thumbnail">#}
-{#              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">#}
-{#            </a>#}
-{#          </div>#}
-{#          <div class="col-xs-6 col-md-3">#}
-{#            <a href="#" class="thumbnail">#}
-{#              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">#}
-{#            </a>#}
-{#          </div>#}
-{#          <div class="col-xs-6 col-md-3">#}
-{#            <a href="#" class="thumbnail">#}
-{#              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">#}
-{#            </a>#}
-{#          </div>#}
-{#          <div class="col-xs-6 col-md-3">#}
-{#            <a href="#" class="thumbnail">#}
-{#              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">#}
-{#            </a>#}
-{#          </div>#}
-{#          <div class="col-xs-6 col-md-3">#}
-{#            <a href="#" class="thumbnail">#}
-{#              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">#}
-{#            </a>#}
-{#          </div>#}
-{#          <div class="col-xs-6 col-md-3">#}
-{#            <a href="#" class="thumbnail">#}
-{#              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">#}
-{#            </a>#}
-{#          </div>#}
-{#          <div class="col-xs-6 col-md-3">#}
-{#            <a href="#" class="thumbnail">#}
-{#              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">#}
-{#            </a>#}
-{#          </div>#}
-{#        </div>#}
-{#    </div>#}
-
-
-    <div class="block3">
-        <ul class="nav nav-list">
-          <li class="nav-header"><b>Menu epta:</b></li>
-          <li class="active"><a href="/user">My page</a></li>
-          <li><a href="/pictures">Pictures</a></li>
-          <li><a href="/photos">Photos</a></li>
-          <li><a href="/blog">Dat guy blog</a></li>
-          <li><a href="#">Кнопка3</a></li>
-        </ul>
+        {% block flash %}
+        <div class="row">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if "Error" not in message[1]: %}
+                            <div class="alert alert-info">
+                              <strong>Success! </strong> {{ message[1] }}
+                            </div>
+                        {% endif %}
+                        {% if "Error" in message[1]: %}
+                            <div class="alert alert-warning">
+                              <strong>Error! </strong> {{ message[1] }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        {% endblock %}
+        <br>
+        <div class="container">
+        {% block content %}{% endblock %}
+        </div>
+        <br>
+        <div class="container">
+        {% block user_content %}{% endblock %}
+        </div>
+        <br>
+      </div>
     </div>
 
 

@@ -1,6 +1,8 @@
-{% extends "layout.html" %}
+{% extends "mypage.html" %}
 {% block content %}
-
+  {{ super() }}
+{% endblock %}
+{% block user_content %}
         <p><b>Pictures</b></p>
         <div class="row">
           <div class="col-xs-6 col-md-3">

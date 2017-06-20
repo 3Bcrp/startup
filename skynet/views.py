@@ -4,25 +4,11 @@ from flask import current_app
 from flask_login import login_user
 from wtforms import StringField, BooleanField, PasswordField, FieldList, TextField, TextAreaField, SelectField, validators, FileField
 from wtforms.validators import DataRequired, Length, URL, EqualTo, Email
-from flask.ext.wtf import Form
+from flask_wtf import FlaskForm
 from skynet.models import *
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import flask_admin as admin
-
-
-class ReusableForm(Form):
-    username = TextField('User name:', validators=[validators.required()])
-    password = TextField('Password:', validators=[validators.required(), validators.Length(min=3, max=35)])
-    name = TextField('Your name:', validators=[validators.required()])
-    second_name = TextField('Second name:', validators=[validators.Length(min=3, max=35)])
-    nick = TextField('Nick:')
-    city = TextField('City:', validators=[validators.required(), validators.Length(min=2, max=35)])
-    role = TextField('Role:', default='user')
-
-    def reset(self):
-        from werkzeug.datastructures import MultiDict
-        blankData = MultiDict([('csrf', self.reset_csrf())])
-        self.process(blankData)
+from skynet.forms import *
 
 
 @login_manager.user_loader
@@ -34,6 +20,11 @@ def load_user(userid):
 def before_request():
     g.user = current_user
 
+#######################################################
+#                                                     #
+#                    USER PAGES                       #
+#                                                     #
+#######################################################
 
 @app.route('/')
 def root():
@@ -44,29 +35,85 @@ def root():
         return redirect(url_for('user', username=username))
 
 
-
 @app.route('/user/<username>')
-@login_required
 def user(username):
+    form = AddPostForm(request.form)
     user = User.query.filter_by(username = username).first()
     # if user == None:
     #     flash('User ' + username + ' not found.')
     #     return redirect(url_for('login'))
     posts = Post.query.filter_by(user_id=user.id).all()
     return render_template('mypage.html',
-        user=user,
-        posts=posts)
+                           form=form,
+                           user=user,
+                           posts=posts)
+
+#######################################################
+#                                                     #
+#                   USER METHODS                      #
+#                                                     #
+#######################################################
+
+@app.route('/user/<username>/photos')
+def photos(username):
+    user = User.query.filter_by(username = session.get('username')).first()
+    return render_template('photos.html', user=user)
 
 
-@app.route('/photos')
-def photos():
-    return render_template('photos.html')
+@app.route('/user_search', methods=[ 'POST', 'GET'])
+def user_search():
+    app.logger.debug('user_search method called')
+    # search_form = UserSearchForm(request.form)
+    if request.method == "POST" :
+        app.logger.debug('user_search validating')
+        if search_form.validate_on_submit():
+            search_user = request.form['user-search']
+            app.logger.debug('searching user  %s' % search_user)
+    
+            users = User.query.filter_by(username = search_user).all()
+    
+            return render_template('user_search.html', users=users)
+        else:
+            app.logger.debug('Search validation falling')
+    return redirect('/')
 
+
+@app.route('/add_post', methods=['POST'])
+def add_post():
+    form = AddPostForm(request.form)
+    if not session.get('logged_in'):
+        abort(401)
+    if form.validate():
+        current_user = User.query.filter_by(username = session.get('username')).first()
+        title = request.form['title']
+        text = request.form['text']
+        post_inf = Post(title=title,
+                        text=text,
+                        date=datetime.datetime.now(),
+                        user_id=current_user.id)
+    
+        current_user.post.append(post_inf)
+    
+        db.session.commit()
+    
+        flash('New entry was successfully posted')
+        app.logger.debug('new info added')
+    else:
+        flash('Error: incorrect data input')
+        app.logger.debug('Posting validations error')
+    
+    return redirect(url_for('user', username=session.get('username')))
+
+#######################################################
+#                                                     #
+#                     AUTH BLOCK                      #
+#                                                     #
+#######################################################
 
 @app.route("/sign_up", methods=['GET', 'POST'])
 def sign_up():
     error = None
-    form = ReusableForm(request.form)
+    form = SignUpForm(request.form)
     if request.method == 'POST':
         app.logger.debug('sign_up POST method')
         username = request.form['username']
@@ -75,56 +122,58 @@ def sign_up():
         second_name = request.form['second_name']
         nick = request.form['nick']
         city = request.form['city']
-
-        app.logger.debug('data accepted')
-        msg = User(username, password, name, second_name, nick, city, role='user')
-    
-        app.logger.debug('db commiting')
-        try:
-            db.session.add(msg)
-            db.session.commit()
-        except sqlalchemy.exc.IntegrityError:
-            flash('Error: ' + 'user ' + username + ' Already exists')
-            return render_template('sign_up.html', error=error)
-        app.logger.debug('success')
-        if form.validate():
+        app.logger.debug('start validation {}'.format(request.form))
+        
+        if form.validate_on_submit():
             # for i in User.query.filter_by(username=username).all():
             #     if username == i.username:
             #         flash('Error: ' + username + 'Already exists')
             # Save the comment here.
-            session['logged_in'] = True
-            flash('Hello ' + username)
-            return redirect(url_for('user', username=username))
+            app.logger.debug('data accepted')
+            msg = User(username=username, password=password,
+                   name=name, second_name=second_name,
+                   nick=nick, city=city, role='user')
+    
+            app.logger.debug('db commiting')
+            try:
+                db.session.add(msg)
+                db.session.commit()
+                app.logger.debug('success')
+                session['logged_in'] = True
+                session['username'] = username
+                flash('Hello ' + username)
+                return redirect(url_for('root'))
+            except sqlalchemy.exc.IntegrityError:
+                flash('Error: ' + 'user ' + username + ' already exists')
         else:
+            app.logger.debug('sign up validation falling')
             flash('Error: All the form fields are required. ')
             
         session['username'] = username
         # app.logger.debug('user {} successfully login'.format(session.get('username')))
-    return render_template('sign_up.html', error=error)
+    return render_template('sign_up.html', form=form, error=error)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
+    form = LoginForm(request.form)
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user_inf = User.query.filter_by(username=username).first()
-        if user_inf is None:
-            error = 'Invalid username'
-            app.logger.debug('invalid uname'.format())
-        elif password != user_inf.password:
-            error = 'Invalid password'
-            app.logger.debug('invalid pswd')
-        else:
+        if form.validate_on_submit():
+            user_inf = User.query.filter_by(username=username).first()
             session['logged_in'] = True
             session['username'] = username
             flash('You were logged in')
             user = user_inf
             login_user(user, force=True)
             app.logger.debug('we are logged in as {}'.format(session.get('username')))
-            return redirect(url_for('user', username = username))
-    return render_template('login.html', error=error)
+            return redirect(url_for('root', username = username))
+        else:
+            app.logger.debug('Login validation exception: {}, {}'.format(username, password))
+            flash('Error: Please type correct data in fields!')
+    return render_template('login.html', form=form, error=error)
 
 
 @app.route('/logout')
@@ -135,8 +184,12 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+#######################################################
+#                                                     #
+#               LOGGER SETTING UP                     #
+#                                                     #
+#######################################################
 
-# Setup the logger
 file_handler = logging.FileHandler('skynet/logs/apperror.log')
 handler = logging.StreamHandler()
 file_handler.setLevel(logging.DEBUG)

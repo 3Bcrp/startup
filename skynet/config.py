@@ -1,4 +1,5 @@
 # default settings
+CSRF_ENABLED = True
 SECRET_KEY = '123456790'
 USERNAME = 'test'
 PASSWORD = 'test'
