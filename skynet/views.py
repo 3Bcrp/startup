@@ -27,12 +27,10 @@ def before_request():
 #######################################################
 
 @app.route('/')
+@login_required
 def root():
-    if not session.get('logged_in'):
-        return redirect(url_for('sign_up'))
-    else:
-        username = session.get('username')
-        return redirect(url_for('user', username=username))
+    username = session.get('username')
+    return redirect(url_for('user', username=username))
 
 
 @app.route('/user/<username>')
@@ -142,6 +140,7 @@ def sign_up():
                 session['logged_in'] = True
                 session['username'] = username
                 flash('Hello ' + username)
+                g.user = msg
                 return redirect(url_for('root'))
             except sqlalchemy.exc.IntegrityError:
                 flash('Error: ' + 'user ' + username + ' already exists')
