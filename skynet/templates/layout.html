@@ -10,7 +10,7 @@
     <title>Skynet - A new age social network!</title>
 
     <!-- Custom Fonts -->
-    <link href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/font-awesome.min.css')}}" rel="stylesheet" type="text/css">
     
     <link href="{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/sb-admin.css')}}" rel="stylesheet">
@@ -50,7 +50,7 @@
             <a href="#">
               <div class="media">
                 <span class="pull-left">
-                  <img class="media-object" src="http://placehold.it/50x50" alt="">
+                  <img class=media-object height=50px weigth=50px src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">
                 </span>
                 <div class="media-body">
                   <h5 class="media-heading"><strong> John Smith </strong></h5>
@@ -159,6 +159,9 @@
                 {% block content %}{% endblock %}
             </div>
             <br>
+        </div>
+        
+        <div class="navbar-footer">
         </div>
     </div>
   </body>
