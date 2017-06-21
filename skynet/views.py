@@ -1,14 +1,8 @@
 import logging
 import sqlalchemy
-from flask import current_app
-from flask_login import login_user
-from wtforms import StringField, BooleanField, PasswordField, FieldList, TextField, TextAreaField, SelectField, validators, FileField
-from wtforms.validators import DataRequired, Length, URL, EqualTo, Email
-from flask_wtf import FlaskForm
-from skynet.models import *
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-import flask_admin as admin
+from flask_login import login_user, logout_user, login_required, current_user
 from skynet.forms import *
+from skynet.models import *
 
 
 @login_manager.user_loader
@@ -27,21 +21,17 @@ def before_request():
 #######################################################
 
 @app.route('/')
+@login_required
 def root():
-    if not session.get('logged_in'):
-        return redirect(url_for('sign_up'))
-    else:
-        username = session.get('username')
-        return redirect(url_for('user', username=username))
+    username = session.get('username')
+    return redirect(url_for('user', username=username))
 
 
 @app.route('/user/<username>')
+@login_required
 def user(username):
     form = AddPostForm(request.form)
     user = User.query.filter_by(username = username).first()
-    # if user == None:
-    #     flash('User ' + username + ' not found.')
-    #     return redirect(url_for('login'))
     posts = Post.query.filter_by(user_id=user.id).all()
     return render_template('mypage.html',
                            form=form,
@@ -55,12 +45,14 @@ def user(username):
 #######################################################
 
 @app.route('/user/<username>/photos')
+@login_required
 def photos(username):
     user = User.query.filter_by(username = session.get('username')).first()
     return render_template('photos.html', user=user)
 
 
 @app.route('/user_search', methods=[ 'POST', 'GET'])
+@login_required
 def user_search():
     app.logger.debug('user_search method called')
     # search_form = UserSearchForm(request.form)
@@ -79,10 +71,9 @@ def user_search():
 
 
 @app.route('/add_post', methods=['POST'])
+@login_required
 def add_post():
     form = AddPostForm(request.form)
-    if not session.get('logged_in'):
-        abort(401)
     if form.validate():
         current_user = User.query.filter_by(username = session.get('username')).first()
         title = request.form['title']
@@ -142,6 +133,8 @@ def sign_up():
                 session['logged_in'] = True
                 session['username'] = username
                 flash('Hello ' + username)
+                g.user = msg
+                login_user(g.user, force=True)
                 return redirect(url_for('root'))
             except sqlalchemy.exc.IntegrityError:
                 flash('Error: ' + 'user ' + username + ' already exists')

@@ -1,148 +1,165 @@
 <!DOCTYPE html>
   <head>
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
-    <style type="text/css">
-        .blockname {
-            margin-top: 10px;
-            padding-left: 70px;
-            padding-right: 15px;
-            width: 200px;
-        }
-        .block1 {
-            float: left;
-            margin-left: 20px;
-            margin-right: 30px;
-            width: 200px;
-        }
+    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-        .block2 {
-            float: left;
-            margin-left: 50px;
-            margin-top: 10px;
-            width: 500px;
-        }
-        .block3 {
-            float: none;
-            margin-left: 60px;
-            margin-top: 20px;
-            width: 150px;
-        }
-        .container {
-            background-color: #D4D4D4;
-            margin: 0px auto;
-            padding-right:24px;
-            padding-left:24px;
-        }
-      </style>
+    <title>Skynet - A new age social network!</title>
+
+    <!-- Custom Fonts -->
+    <link href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css')}}" rel="stylesheet" type="text/css">
+    
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/sb-admin.css')}}" rel="stylesheet">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+    
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    
   </head>
 
   <body>
-        <nav class="navbar navbar-default">
-          <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="/">Skynet</a>
+
+    <div id="wrapper">
+      <!-- Navigation -->
+      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">Skynet</a>
+        <a class="navbar-brand" href="/admin">Admin</a>
+        </div>
+    
+    <ul class="nav navbar-right top-nav">
+    {% if session.logged_in %}
+                                  <!-- MESSAGE PREVIEW -->
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> Messages <b class="caret"></b></a>
+        <ul class="dropdown-menu message-dropdown">
+          <li class="message-preview">
+            <a href="#">
+              <div class="media">
+                <span class="pull-left">
+                  <img class="media-object" src="http://placehold.it/50x50" alt="">
+                </span>
+                <div class="media-body">
+                  <h5 class="media-heading"><strong> John Smith </strong></h5>
+                  <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
+                  <p>Lorem ipsum dolor sit amet, consectetur...</p>
+                </div>
+              </div>
+            </a>
+          </li>
+          <li class="message-footer">
+            <a href="#">Read All New Messages</a>
+          </li>
+        </ul>
+      </li>
+                                  <!-- NEWS PREVIEW -->
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> What's news? <b class="caret"></b></a>
+        <ul class="dropdown-menu alert-dropdown">
+          <li>
+            <a href="#"> News name <span class="label label-default"> News Label </span></a>
+          </li>
+          <li class="divider"></li>
+          <li>
+             <a href="#">View All</a>
+          </li>
+        </ul>
+      </li>
+                                    <!-- USER PROFILER -->    
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{ g.user.name }} {{ g.user.second_name }} <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li>
+            <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
+          </li>
+          <li>
+            <a href="#"><i class="fa fa-fw fa-envelope"></i> Inbox</a>
+          </li>
+          <li>
+            <a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a>
+          </li>
+          <li class="divider"></li>
+          <li>
+            <a href="/logout"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+          </li>
+        </ul>
+      </li>
+      
+    {% endif %}
+    </ul>
+    
+            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav side-nav">
+                    <li>
+                        <a href="{{ url_for('root')}}"><i class="fa fa-fw fa-home"></i>Home</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('photos', username=g.user.username)}}"><i class="fa fa-fw fa-camera"></i>Photos</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-fw fa-video-camera"></i>Videos</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-fw fa-group"></i>Friends</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-fw fa-map"></i>Places</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-fw fa-cog"></i>Settings</a>
+                    </li>
+                </ul>
             </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-              <ul class="nav navbar-nav">
-                <li><a href="/admin">Admin</a></li>
-                {% if session.logged_in %}
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li>
-                        <span class="glyphicon glyphicon-home" aria-hidden="true">
-                        <a href="{{ url_for('root')}}">Home</a>
-                    </li>
-                    <li>
-                        <span class="glyphicon glyphicon-camera" aria-hidden="true">
-                        <a href="{{ url_for('photos', username=session.get('username'))}}">Photos</a>
-                    </li>
-                    <li>
-                        <span class="glyphicon glyphicon-facetime-video" aria-hidden="true">
-                        <a href="#">Videos</a>
-                    </li>
-                    <li>
-                        <span class="glyphicon glyphicon-user" aria-hidden="true">
-                        <a href="#">Friends</a>
-                    </li>
-                    <li>
-                        <span class="glyphicon glyphicon-map-marker" aria-hidden="true">
-                        <a href="#">Places</a>
-                    </li>
-                    <li>
-                        <span class="glyphicon glyphicon-cog" aria-hidden="true">
-                        <a href="#">Settings</a>
-                    </li>
-                  </ul>
-                </li>
-                {% endif %}
-              </ul>
-              <form class="navbar-form navbar-left">
-                <form action="{{ url_for('user_search') }}" method="post" class="user_search">
-                  <div class="form-group">
-                    <input type="text" class="form-control" name="user-search" placeholder="Search user">
-                  </div>
-                  <a href="/user_search">
-                    <button type="button" class="btn btn-default" aria-label="Search">
-                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                    </button>
-                  </a>
-                </form>
-              </form>
-              <ul class="nav navbar-nav navbar-right">
-                {% if session.logged_in %}
-                <li><a href="/logout">Logout</a></li>
-                {% else %}
-                <li><a href="/login">Login</a></li>
-                {% endif %}
-              </ul>
-            </div><!-- /.navbar-collapse -->
-          </div><!-- /.container-fluid -->
+            <!-- /.navbar-collapse -->
         </nav>
-        {% block flash %}
-        <div class="row">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for message in messages %}
-                        {% if "Error" not in message[1]: %}
-                            <div class="alert alert-info">
-                              <strong>Success! </strong> {{ message[1] }}
-                            </div>
-                        {% endif %}
-                        {% if "Error" in message[1]: %}
-                            <div class="alert alert-warning">
-                              <strong>Error! </strong> {{ message[1] }}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+        
+                                      <!-- Main Block -->          
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <br>
+                <div class="row">
+                  <div class="col-lg-12">
+                    {% block flash %}
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                       
+                            {% for message in messages %}
+                                {% if "Error" not in message[1]: %}
+                                    <div class="alert alert-info text-center">
+                                      <strong>Success! </strong> {{ message[1] }}
+                                    </div>
+                                {% endif %}
+                                {% if "Error" in message[1]: %}
+                                    <div class="alert alert-warning text-center">
+                                      <strong>Error! </strong> {{ message[1] }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                    {% endblock %}
+                  </div>
+                </div>
+                <!-- /.row -->
+                <br>
+                {% block content %}{% endblock %}
+            </div>
+            <br>
         </div>
-        {% endblock %}
-        <br>
-        <div class="container">
-        {% block content %}{% endblock %}
-        </div>
-        <br>
-        <div class="container">
-        {% block user_content %}{% endblock %}
-        </div>
-        <br>
-      </div>
     </div>
-
-
   </body>
 </html>
