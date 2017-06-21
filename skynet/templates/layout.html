@@ -108,7 +108,7 @@
                         <a href="{{ url_for('root')}}"><i class="fa fa-fw fa-home"></i>Home</a>
                     </li>
                     <li>
-                        <a href="{{ url_for('photos', username=session.get('username'))}}"><i class="fa fa-fw fa-camera"></i>Photos</a>
+                        <a href="{{ url_for('photos', username=g.user.username)}}"><i class="fa fa-fw fa-camera"></i>Photos</a>
                     </li>
                     <li>
                         <a href="#"><i class="fa fa-fw fa-video-camera"></i>Videos</a>
