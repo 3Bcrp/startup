@@ -134,6 +134,7 @@ def sign_up():
                 session['username'] = username
                 flash('Hello ' + username)
                 g.user = msg
+                login_user(g.user, force=True)
                 return redirect(url_for('root'))
             except sqlalchemy.exc.IntegrityError:
                 flash('Error: ' + 'user ' + username + ' already exists')

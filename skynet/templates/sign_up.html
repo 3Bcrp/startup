@@ -1,42 +1,79 @@
-{% extends "layout.html" %}
-
-{% block content %}
-<div class="container">
-
-
-  <h2>Please sign up!</h2>
-    <form action="/sign_up" method="POST">
-      {{ form.hidden_tag() }}
-    <div class="row">
-          <input type="username" name="username" placeholder="Username">
-    </div>
-    <br>
-    <div class="row">
-      <input type="password" name="password" placeholder="Password">
-    </div>
-    <br>
-    <div class="row">
-      <input type="name" name="name" placeholder="Name">
-    </div>
-    <br>
-    <div class="row">
-      <input type="second_name" name="second_name" placeholder="Second Name">
-    </div>
-    <br>
-    <div class="row">
-      <input type="nick" name="nick" placeholder="Nick">
-    </div>
-    <br>
-    <div class="row">
-      <input type="city" name="city" placeholder="City">
-    </div>
-    <br>
-    <div class="row">
-      <button type="submit" class="btn btn-success">Sign Up</button>
-      <a href="{{ url_for('login')}}" class="btn btn-success">Login</a>
-    </div>
-  </form>
-
-  <br>
-</div>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <title>Welcome to Skynet!</title>
+        <meta name="description" content="Custom Login Form Styling with CSS3" />
+        <meta name="keywords" content="css3, login, form, custom, input, submit, button, html5, placeholder" />
+        <meta name="author" content="Codrops" />
+        <link href="{{ url_for('static', filename='css/signup.css')}}" rel="stylesheet" type="text/css" />
+        <script src="{{ url_for('static', filename='js/modernizr.custom.63321.js')}}"></script>
+        <!--[if lte IE 7]><style>.main{display:none;} .support-note .note-ie{display:block;}</style><![endif]-->
+    </head>
+	
+    <body>
+        <div class="container">
+			    
+			    <header>
+				    <div class="support-note">
+					    <span class="note-ie">Sorry, only modern browsers.</span>
+				    </div>
+			    </header>
+          
+          <div class="registerbox">
+			    <section class="main">
+            <form class="form-2" action="/sign_up" method="POST">
+              {{ form.hidden_tag() }}
+					    <h1><span class="log-in">Sign Up</span> or
+                <span class="sign-up">
+                  <a href="{{ url_for('login')}}" class="btn btn-success">Log in</a>
+                </span>
+              </h1>
+                            <!-- Username -->
+					    <p class="float">
+						    <label for="login">Username</label>
+						    <input type="username" name="username" placeholder="Username">
+					    </p>
+                            <!-- Password -->
+					    <p class="float">
+						    <label for="password">Password</label>
+						    <input type="password" name="password" placeholder="Password">
+					    </p>
+                            <!-- Name -->
+              <p class="float">
+						    <label for="name">Your name</label>
+						    <input type="name" name="name" placeholder="Name">
+					    </p>
+                            <!-- Second name -->
+              <p class="float">
+						    <label for="second_name">Your second name</label>
+						    <input type="second_name" name="second_name" placeholder="Second name">
+					    </p>
+                            <!-- Nick -->
+              <p class="float">
+						    <label for="nick">Nickname</label>
+						    <input type="nick" name="nick" placeholder="Nickname">
+					    </p>
+                            <!-- City -->
+              <p class="float">
+						    <label for="city">Your city</label>
+						    <input type="city" name="city" placeholder="City">
+					    </p>
+                            <!-- Other.... -->
+              <p class="float">
+              </p>
+                            <!-- Submit button -->
+              <p class="clearfix">    
+						    <input type="submit" name="submit" value="Sign Up">
+					    </p>
+				    </form>​​
+          </section>
+          </div>
+			    <div class="presentation">
+            <iframe width=100% height=100% src="https://www.youtube.com/embed/sUtoxEZvPyY?rel=0&loop=1&autoplay=1" frameborder="0" allowfullscreen></iframe>
+          </div>
+       </div>
+    </body>
+</html>
