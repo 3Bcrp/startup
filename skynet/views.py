@@ -1,8 +1,10 @@
 import logging
 import sqlalchemy
 from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug import *
 from skynet.forms import *
 from skynet.models import *
+# from skynet.config import ALLOWED_EXTENSIONS
 
 
 @login_manager.user_loader
@@ -94,6 +96,34 @@ def add_post():
         app.logger.debug('Posting validations error')
     
     return redirect(url_for('user', username=session.get('username')))
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/user/<username>/settings', methods=['GET', 'POST'])
+def settings(username):
+    user = g.user
+    form = SettingsForm(request.form)
+    if request.method == 'POST':
+        password = request.form['password']
+        nick = request.form['nick']
+        city = request.form['city']
+        if 'file' not in request.files:
+            flash('No file part')
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            basedir = os.path.dirname(os.path.abspath(__file__))
+            file.save(os.path.join(basedir,
+                                   app.config['UPLOAD_FOLDER'],
+                                   g.user.username,
+                                   app.config['AVATAR_FOLDER'],
+                                   filename))
+            return redirect(url_for('user', username=g.user.username))
+    return render_template('settings.html', user=user, username=g.user.username, form=form)
 
 #######################################################
 #                                                     #

@@ -31,4 +31,11 @@ class AddPostForm(MainForm):
 
 
 class UserSearchForm(MainForm):
-    user_search = TextField('User name:', [validators.DataRequired(), validators.Length(min=1, max=35)])     
+    user_search = TextField('User name:', [validators.DataRequired(), validators.Length(min=1, max=35)])
+
+
+class SettingsForm(MainForm):
+    password = TextField('Password:', [validators.DataRequired(), validators.Length(min=3, max=35)])
+    nick = TextField('Nick:')
+    city = TextField('City:', validators=[validators.DataRequired(), validators.Length(min=2, max=35)])
+    avatar = TextField('Nick:')

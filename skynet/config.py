@@ -23,3 +23,9 @@ SQLALCHEMY_DATABASE_URI = 'postgresql://{usrn}:{pasw}@{host}:{port}/{db_n}'.form
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_ECHO = True
 DEBUG = True
+
+# Uploading 
+AVATAR_FOLDER = './avatar'
+UPLOAD_FOLDER = './uploads'
+ALLOWED_EXTENSIONS = ('png', 'jpg', 'jpeg', 'gif')
+MAX_CONTENT_LENGTH = 1 * 512 * 1024
