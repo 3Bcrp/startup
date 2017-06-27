@@ -107,6 +107,6 @@ if __name__ == '__main__':
     adminUser = User(username='admin', password='1234',
                      name='admin', second_name='adminov',
                      nick='God blessed', city='Admin City',
-                     role='admin', avatar='http://via.placeholder.com/350x150')
+                     role='admin', avatar='default/default-avatar.jpg')
     db.session.add(adminUser)
     db.session.commit()

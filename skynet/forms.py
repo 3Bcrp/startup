@@ -38,4 +38,4 @@ class SettingsForm(MainForm):
     password = TextField('Password:', [validators.DataRequired(), validators.Length(min=3, max=35)])
     nick = TextField('Nick:')
     city = TextField('City:', validators=[validators.DataRequired(), validators.Length(min=2, max=35)])
-    avatar = TextField('Nick:')
+    avatar = TextField('Avatar:')
