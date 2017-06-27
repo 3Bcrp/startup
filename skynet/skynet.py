@@ -16,8 +16,9 @@ except ImportError as err:
 base_path = os.path.dirname(os.path.abspath(__file__))
 # Folder creation
 try:
-    log_path = os.mkdir(os.path.join(base_path, './logs'))
-    upload_path = os.mkdir(os.path.join(base_path, './uploads'))
+    upload_path = os.mkdir(os.path.join(base_path,'static', 'uploads'))
+    log_path = os.mkdir(os.path.join(base_path, 'logs'))
+    print(upload_path)
 except OSError:
     print('Path already exist')
 

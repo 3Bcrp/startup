@@ -101,6 +101,7 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
+
 @app.route('/user/<username>/settings', methods=['GET', 'POST'])
 def settings(username):
     user = g.user
@@ -116,14 +117,20 @@ def settings(username):
             flash('No selected file')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            basedir = os.path.dirname(os.path.abspath(__file__))
-            file.save(os.path.join(basedir,
-                                   app.config['UPLOAD_FOLDER'],
-                                   g.user.username,
-                                   app.config['AVATAR_FOLDER'],
-                                   filename))
+            avatar_path = os.path.join(user.user_path,
+                                       app.config['PHOTO_ALBUMS_FOLDER'],
+                                       app.config['AVATAR_FOLDER'],
+                                       filename)
+            file.save(avatar_path)
+
+            user.nick = nick
+            user.password = password
+            user.city = city
+            user.avatar = os.path.relpath(avatar_path, start='./skynet/static/')
+            db.session.commit()
+            
             return redirect(url_for('user', username=g.user.username))
-    return render_template('settings.html', user=user, username=g.user.username, form=form)
+    return render_template('settings.html', user=user, username=user.username, form=form)
 
 #######################################################
 #                                                     #
@@ -151,20 +158,33 @@ def sign_up():
             #         flash('Error: ' + username + 'Already exists')
             # Save the comment here.
             try:
-                            # User uploading folder creation
+                # User uploading folder creation
                 basedir = os.path.dirname(os.path.abspath(__file__))
-                user_path = os.path.join(basedir, app.config['UPLOAD_FOLDER'], username)
+                user_path = os.path.join(basedir,
+                                         app.config['STATIC_FOLDER'],
+                                         app.config['UPLOAD_FOLDER'],
+                                         username)
+                avatar = os.path.relpath(os.path.join(basedir,
+                                                      app.config['STATIC_FOLDER'],
+                                                      app.config['DEFAULT_FOLDER'],
+                                                      app.config['DEFAULT_AVATAR']),
+                                         start='./skynet/static/')
             
                 app.logger.debug('data accepted')
                 msg = User(username=username, password=password,
                    name=name, second_name=second_name,
                    nick=nick, city=city, role='user',
                    user_path = user_path,
-                   avatar='http://lorempixel.com/200/400/people')
+                   avatar=avatar)
 
                 app.logger.debug('db commiting')
                 db.session.add(msg)
                 os.mkdir(user_path)
+                os.mkdir(os.path.join(user_path,
+                                      app.config['PHOTO_ALBUMS_FOLDER']))
+                os.mkdir(os.path.join(user_path,
+                                      app.config['PHOTO_ALBUMS_FOLDER'],
+                                      app.config['AVATAR_FOLDER']))
                 db.session.commit()
                 app.logger.debug('success')
                 session['logged_in'] = True

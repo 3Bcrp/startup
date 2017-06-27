@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<form action="{{ url_for('settings', username=user.username) }}" method=post class=settings enctype="multipart/form-data">
+<form action="{{ url_for('settings', username=username) }}" method=post class=settings enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <div class="row">
       <h1 class="page-header">

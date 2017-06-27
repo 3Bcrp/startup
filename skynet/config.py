@@ -25,8 +25,11 @@ SQLALCHEMY_ECHO = True
 DEBUG = True
 
 # Uploading
-ROOT_FOLDER = './avatar'
-AVATAR_FOLDER = './avatar'
-UPLOAD_FOLDER = './uploads'
+PHOTO_ALBUMS_FOLDER = 'albums'
+STATIC_FOLDER = 'static'
+AVATAR_FOLDER = 'avatar'
+DEFAULT_AVATAR = 'default-avatar.jpg'
+DEFAULT_FOLDER = 'default'
+UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = ('png', 'jpg', 'jpeg', 'gif')
 MAX_CONTENT_LENGTH = 1 * 512 * 1024

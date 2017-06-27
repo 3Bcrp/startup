@@ -16,3 +16,6 @@ __pycache__/
 *.jpg
 *.jpeg
 *.gif
+
+# Include default files
+!skynet/static/default/*

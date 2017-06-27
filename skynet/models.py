@@ -30,7 +30,7 @@ class User(db.Model):
     city = db.Column(db.String(80), unique=False)
     role = db.Column(db.String(7),unique=False, default= 'user')
     user_path = db.Column(db.String(120))
-    avatar = db.Column(db.String(80))
+    avatar = db.Column(db.String(180))
     
     post = db.relationship("Post", backref="user", lazy="dynamic")
     album = db.relationship("Album", backref="user", lazy="dynamic")
