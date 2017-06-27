@@ -103,6 +103,7 @@ def allowed_file(filename):
 
 
 @app.route('/user/<username>/settings', methods=['GET', 'POST'])
+@login_required
 def settings(username):
     user = g.user
     form = SettingsForm(request.form)
@@ -117,7 +118,11 @@ def settings(username):
             flash('No selected file')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            avatar_path = os.path.join(user.user_path,
+            basedir = os.path.dirname(os.path.abspath(__file__))
+            avatar_path = os.path.join(basedir,
+                                       app.config['STATIC_FOLDER'],
+                                       app.config['UPLOAD_FOLDER'],
+                                       username,
                                        app.config['PHOTO_ALBUMS_FOLDER'],
                                        app.config['AVATAR_FOLDER'],
                                        filename)
@@ -174,7 +179,6 @@ def sign_up():
                 msg = User(username=username, password=password,
                    name=name, second_name=second_name,
                    nick=nick, city=city, role='user',
-                   user_path = user_path,
                    avatar=avatar)
 
                 app.logger.debug('db commiting')
