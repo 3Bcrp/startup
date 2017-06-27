@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block content %}
+<form action="{{ url_for('settings', username=username) }}" method=post class=settings enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="row">
+      <h1 class="page-header">
+        Please set up your account information, {{ user.nick.capitalize() }} .
+      </h1>
+    </div>
+                    <!-- Nick -->
+    <div class="row">
+		<label for="nick">Nickname</label>
+		<input type="nick" name="nick" placeholder="Nickname">
+	</div>
+                        <!-- City -->
+    <div class="row">
+		<label for="password">Password</label>
+		<input type="password" name="password" placeholder="Password">
+	</div>
+                    <!-- Password -->
+    <div class="row">
+		<label for="city">Your city</label>
+		<input type="city" name="city" placeholder="City">
+	</div>
+                        <!-- Avatar -->
+    <div class="row">
+		<label for="avatar">Avatar</label>
+        <p><input type=file name=file>
+	</div>
+                            <!-- Avatar -->
+    <div class="row">
+		<input type="submit" name="submit" value="Update">
+	</div>   
+</form>​​
+{% endblock %}

@@ -10,3 +10,12 @@ __pycache__/
 # Ignore sqlite files
 *.db
 *.sqlite
+
+# Ignore static files
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Include default files
+!skynet/static/default/*

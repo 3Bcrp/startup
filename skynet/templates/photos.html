@@ -2,51 +2,38 @@
 {% block content %}
     <div class="row">
       <h1 class="page-header">
-        Pictures
+        Photo-albums
       </h1>
-    </div>
-        <div class="row">
-          <div class="col-xs-6 col-md-3">
-            <a href="#" class="thumbnail">
-              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">
-            </a>
-          </div>
-          <div class="col-xs-6 col-md-3">
-            <a href="#" class="thumbnail">
-              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">
-            </a>
-          </div>
-          <div class="col-xs-6 col-md-3">
-            <a href="#" class="thumbnail">
-              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">
-            </a>
-          </div>
-          <div class="col-xs-6 col-md-3">
-            <a href="#" class="thumbnail">
-              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">
-            </a>
-          </div>
-          <div class="col-xs-6 col-md-3">
-            <a href="#" class="thumbnail">
-              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">
-            </a>
-          </div>
-          <div class="col-xs-6 col-md-3">
-            <a href="#" class="thumbnail">
-              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">
-            </a>
-          </div>
-          <div class="col-xs-6 col-md-3">
-            <a href="#" class="thumbnail">
-              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">
-            </a>
-          </div>
-          <div class="col-xs-6 col-md-3">
-            <a href="#" class="thumbnail">
-              <img src="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg" alt="http://imagens.mdig.com.br/retrospectiva/mugshots_2012_06.jpg">
-            </a>
-          </div>
+    </div>  
+    {% if session.logged_in %}
+    <form action="{{ url_for('photos', username=user.username) }}" method=post class=add-album>
+     {{ form.hidden_tag() }}
+      <div class=row>
+        <div class=col-lg-10>
+          <input type=text size=30 name=title placeholder="Title">
         </div>
+      </div>
+        <br>
 
+      <div class=row>
+        <div class=col-lg-10>
+          <button type="submit" class="btn btn-success">Create album</button>
+        </div>
+      </div>
+    </form>
+  <br>
+  {% endif %}
+  <div class=row>
+    <ul class=posts>
+      {% for album in albums %}
+        <div class=col-lg-10>
+          <li><h2>{{ album.title.capitalize() }} on {{ album.date.strftime("%A, %d. %B %Y %I:%M %p") }}</h2>
+          <li><h4></h4>
+        </div>
+      {% else %}
+        <li><em>Unbelievable.  No entries here so far</em>
+      {% endfor %}
+    </ul>
+  </div>  
 
 {% endblock %}

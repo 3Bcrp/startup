@@ -89,7 +89,7 @@
             <a href="#"><i class="fa fa-fw fa-envelope"></i> Inbox</a>
           </li>
           <li>
-            <a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a>
+            <a href="{{ url_for('settings', user=g.user, username=g.user.username, form=form)}}"><i class="fa fa-fw fa-gear"></i> Settings</a>
           </li>
           <li class="divider"></li>
           <li>
@@ -120,7 +120,7 @@
                         <a href="#"><i class="fa fa-fw fa-map"></i>Places</a>
                     </li>
                     <li>
-                        <a href="#"><i class="fa fa-fw fa-cog"></i>Settings</a>
+                        <a href="{{ url_for('settings', user=g.user, username=g.user.username, form=form)}}"><i class="fa fa-fw fa-cog"></i>Settings</a>
                     </li>
                 </ul>
             </div>

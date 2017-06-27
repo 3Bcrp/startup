@@ -11,6 +11,7 @@ class MainForm(FlaskForm):
         blankData = MultiDict([('csrf', self.reset_csrf())])
         self.process(blankData)
 
+
 class SignUpForm(MainForm):
     username = TextField('User name:', [validators.DataRequired(), validators.Length(min=3, max=35)])
     password = TextField('Password:', [validators.DataRequired(), validators.Length(min=3, max=35)])
@@ -27,8 +28,19 @@ class LoginForm(MainForm):
 
 class AddPostForm(MainForm):
     title = TextField('Post title:', [validators.DataRequired(), validators.Length(min=1, max=35)])
-    text = TextField('Post text:', [validators.DataRequired(), validators.Length(min=1, max=35)])       
+    text = TextField('Post text:', [validators.DataRequired(), validators.Length(min=1, max=35)])
+    
+    
+class AddAlbumForm(MainForm):
+    title= TextField('Post title:', [validators.DataRequired(), validators.Length(min=1, max=35)])
 
 
 class UserSearchForm(MainForm):
-    user_search = TextField('User name:', [validators.DataRequired(), validators.Length(min=1, max=35)])     
+    user_search = TextField('User name:', [validators.DataRequired(), validators.Length(min=1, max=35)])
+
+
+class SettingsForm(MainForm):
+    password = TextField('Password:', [validators.DataRequired(), validators.Length(min=3, max=35)])
+    nick = TextField('Nick:')
+    city = TextField('City:', validators=[validators.DataRequired(), validators.Length(min=2, max=35)])
+    avatar = TextField('Avatar:')

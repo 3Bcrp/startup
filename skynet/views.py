@@ -1,8 +1,10 @@
 import logging
 import sqlalchemy
 from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug import *
 from skynet.forms import *
 from skynet.models import *
+# from skynet.config import ALLOWED_EXTENSIONS
 
 
 @login_manager.user_loader
@@ -44,11 +46,41 @@ def user(username):
 #                                                     #
 #######################################################
 
-@app.route('/user/<username>/photos')
+########### PHOTOS ##############
+@app.route('/user/<username>/photos', methods=['GET', 'POST'])
 @login_required
 def photos(username):
-    user = User.query.filter_by(username = session.get('username')).first()
-    return render_template('photos.html', user=user)
+    form = AddAlbumForm(request.form)
+    user = User.query.filter_by(username = username).first()
+    if request.method == "POST" :
+        if form.validate():
+            title = request.form['title']
+            album_inf = Album(title=title,
+                              date=datetime.datetime.now(),
+                              user_id=current_user.id)
+    
+            try:
+                current_user.album.append(album_inf)
+                basedir = os.path.dirname(os.path.abspath(__file__))
+                album_path = os.path.join(basedir,
+                                           app.config['STATIC_FOLDER'],
+                                           app.config['UPLOAD_FOLDER'],
+                                           username,
+                                           app.config['PHOTO_ALBUMS_FOLDER'],
+                                           title)
+                os.mkdir(album_path)
+                db.session.commit()
+                flash('New album created')
+                app.logger.debug('new album created added')
+            except Exception as err:
+                flash('Error occured')
+                app.logger.debug('Error occured: %s' % err)
+        else:
+            flash('Error: incorrect data input')
+            app.logger.debug('Posting validations error')
+    albums = Album.query.filter_by(user_id=user.id).all()
+    return render_template('photos.html', user=user, albums=albums, form=form)
+
 
 
 @app.route('/user_search', methods=[ 'POST', 'GET'])
@@ -95,6 +127,47 @@ def add_post():
     
     return redirect(url_for('user', username=session.get('username')))
 
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+
+@app.route('/user/<username>/settings', methods=['GET', 'POST'])
+@login_required
+def settings(username):
+    user = g.user
+    form = SettingsForm(request.form)
+    if request.method == 'POST':
+        password = request.form['password']
+        nick = request.form['nick']
+        city = request.form['city']
+        if 'file' not in request.files:
+            flash('No file part')
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            basedir = os.path.dirname(os.path.abspath(__file__))
+            avatar_path = os.path.join(basedir,
+                                       app.config['STATIC_FOLDER'],
+                                       app.config['UPLOAD_FOLDER'],
+                                       username,
+                                       app.config['PHOTO_ALBUMS_FOLDER'],
+                                       app.config['AVATAR_FOLDER'],
+                                       filename)
+            file.save(avatar_path)
+
+            user.nick = nick
+            user.password = password
+            user.city = city
+            user.avatar = os.path.relpath(avatar_path, start='./skynet/static/')
+            db.session.commit()
+            
+            return redirect(url_for('user', username=g.user.username))
+    return render_template('settings.html', user=user, username=user.username, form=form)
+
 #######################################################
 #                                                     #
 #                     AUTH BLOCK                      #
@@ -114,20 +187,39 @@ def sign_up():
         nick = request.form['nick']
         city = request.form['city']
         app.logger.debug('start validation {}'.format(request.form))
-        
+
         if form.validate_on_submit():
             # for i in User.query.filter_by(username=username).all():
             #     if username == i.username:
             #         flash('Error: ' + username + 'Already exists')
             # Save the comment here.
-            app.logger.debug('data accepted')
-            msg = User(username=username, password=password,
-                   name=name, second_name=second_name,
-                   nick=nick, city=city, role='user')
-    
-            app.logger.debug('db commiting')
             try:
+                # User uploading folder creation
+                basedir = os.path.dirname(os.path.abspath(__file__))
+                user_path = os.path.join(basedir,
+                                         app.config['STATIC_FOLDER'],
+                                         app.config['UPLOAD_FOLDER'],
+                                         username)
+                avatar = os.path.relpath(os.path.join(basedir,
+                                                      app.config['STATIC_FOLDER'],
+                                                      app.config['DEFAULT_FOLDER'],
+                                                      app.config['DEFAULT_AVATAR']),
+                                         start='./skynet/static/')
+            
+                app.logger.debug('data accepted')
+                msg = User(username=username, password=password,
+                   name=name, second_name=second_name,
+                   nick=nick, city=city, role='user',
+                   avatar=avatar)
+
+                app.logger.debug('db commiting')
                 db.session.add(msg)
+                os.mkdir(user_path)
+                os.mkdir(os.path.join(user_path,
+                                      app.config['PHOTO_ALBUMS_FOLDER']))
+                os.mkdir(os.path.join(user_path,
+                                      app.config['PHOTO_ALBUMS_FOLDER'],
+                                      app.config['AVATAR_FOLDER']))
                 db.session.commit()
                 app.logger.debug('success')
                 session['logged_in'] = True
@@ -136,8 +228,9 @@ def sign_up():
                 g.user = msg
                 login_user(g.user, force=True)
                 return redirect(url_for('root'))
-            except sqlalchemy.exc.IntegrityError:
+            except Exception as err:
                 flash('Error: ' + 'user ' + username + ' already exists')
+                app.logger.debug('Error occured: %s' % err)
         else:
             app.logger.debug('sign up validation falling')
             flash('Error: All the form fields are required. ')
@@ -155,14 +248,19 @@ def login():
         username = request.form['username']
         password = request.form['password']
         if form.validate_on_submit():
-            user_inf = User.query.filter_by(username=username).first()
-            session['logged_in'] = True
-            session['username'] = username
-            flash('You were logged in')
-            user = user_inf
-            login_user(user, force=True)
-            app.logger.debug('we are logged in as {}'.format(session.get('username')))
-            return redirect(url_for('root', username = username))
+            try:
+                user_inf = User.query.filter_by(username=username).first()
+                session['logged_in'] = True
+                session['username'] = username
+                flash('You were logged in')
+                user = user_inf
+                login_user(user, force=True)
+                app.logger.debug('we are logged in as {}'.format(session.get('username')))
+                return redirect(url_for('root', username = username))
+            except Exception as err:
+                flash('Login error')
+                app.logger.debug('Error occured: %s' % err)
+
         else:
             app.logger.debug('Login validation exception: {}, {}'.format(username, password))
             flash('Error: Please type correct data in fields!')
