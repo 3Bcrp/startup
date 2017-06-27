@@ -46,11 +46,41 @@ def user(username):
 #                                                     #
 #######################################################
 
-@app.route('/user/<username>/photos')
+########### PHOTOS ##############
+@app.route('/user/<username>/photos', methods=['GET', 'POST'])
 @login_required
 def photos(username):
-    user = User.query.filter_by(username = session.get('username')).first()
-    return render_template('photos.html', user=user)
+    form = AddAlbumForm(request.form)
+    user = User.query.filter_by(username = username).first()
+    if request.method == "POST" :
+        if form.validate():
+            title = request.form['title']
+            album_inf = Album(title=title,
+                              date=datetime.datetime.now(),
+                              user_id=current_user.id)
+    
+            try:
+                current_user.album.append(album_inf)
+                basedir = os.path.dirname(os.path.abspath(__file__))
+                album_path = os.path.join(basedir,
+                                           app.config['STATIC_FOLDER'],
+                                           app.config['UPLOAD_FOLDER'],
+                                           username,
+                                           app.config['PHOTO_ALBUMS_FOLDER'],
+                                           title)
+                os.mkdir(album_path)
+                db.session.commit()
+                flash('New album created')
+                app.logger.debug('new album created added')
+            except Exception as err:
+                flash('Error occured')
+                app.logger.debug('Error occured: %s' % err)
+        else:
+            flash('Error: incorrect data input')
+            app.logger.debug('Posting validations error')
+    albums = Album.query.filter_by(user_id=user.id).all()
+    return render_template('photos.html', user=user, albums=albums, form=form)
+
 
 
 @app.route('/user_search', methods=[ 'POST', 'GET'])
@@ -96,6 +126,7 @@ def add_post():
         app.logger.debug('Posting validations error')
     
     return redirect(url_for('user', username=session.get('username')))
+
 
 def allowed_file(filename):
     return '.' in filename and \
