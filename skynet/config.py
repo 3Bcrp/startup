@@ -24,7 +24,8 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_ECHO = True
 DEBUG = True
 
-# Uploading 
+# Uploading
+ROOT_FOLDER = './avatar'
 AVATAR_FOLDER = './avatar'
 UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = ('png', 'jpg', 'jpeg', 'gif')

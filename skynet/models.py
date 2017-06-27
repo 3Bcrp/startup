@@ -29,6 +29,7 @@ class User(db.Model):
     nick = db.Column(db.String(80), unique=False)
     city = db.Column(db.String(80), unique=False)
     role = db.Column(db.String(7),unique=False, default= 'user')
+    user_path = db.Column(db.String(120))
     avatar = db.Column(db.String(80))
     
     post = db.relationship("Post", backref="user", lazy="dynamic")
@@ -67,7 +68,8 @@ class Photo(db.Model):
     date = db.Column(db.DateTime)
     title = db.Column(db.String(120))
     likes = db.Column(db.Integer)
-    
+    latitude = db.Column(db.Float)
+    longtitude = db.Column(db.Float)
     album_id = db.Column(db.Integer(), db.ForeignKey('album.id'))
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
 
@@ -87,9 +89,9 @@ class UserAdmin(sqla.ModelView):
     inline_models = ()
 
 # Create M2M table
-post_tags_table = db.Table('post_tags', db.Model.metadata,
-                           db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
-                           )
+# post_tags_table = db.Table('post_tags', db.Model.metadata,
+#                           db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+#                           )
 
 # Create admin
 admin = admin.Admin(app, name='Skynet: admin', template_mode='bootstrap3')
@@ -105,6 +107,6 @@ if __name__ == '__main__':
     adminUser = User(username='admin', password='1234',
                      name='admin', second_name='adminov',
                      nick='God blessed', city='Admin City',
-                     role='admin', avatar='default_path')
+                     role='admin', avatar='http://via.placeholder.com/350x150')
     db.session.add(adminUser)
     db.session.commit()

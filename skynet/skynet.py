@@ -13,6 +13,13 @@ except ImportError as err:
     print('Are you run "pip3 install -r requirements.txt in app root dir?"')
     raise err
 
+base_path = os.path.dirname(os.path.abspath(__file__))
+# Folder creation
+try:
+    log_path = os.mkdir(os.path.join(base_path, './logs'))
+    upload_path = os.mkdir(os.path.join(base_path, './uploads'))
+except OSError:
+    print('Path already exist')
 
 csrf = CSRFProtect()
  # create the application instance :)

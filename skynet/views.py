@@ -144,20 +144,27 @@ def sign_up():
         nick = request.form['nick']
         city = request.form['city']
         app.logger.debug('start validation {}'.format(request.form))
-        
+
         if form.validate_on_submit():
             # for i in User.query.filter_by(username=username).all():
             #     if username == i.username:
             #         flash('Error: ' + username + 'Already exists')
             # Save the comment here.
-            app.logger.debug('data accepted')
-            msg = User(username=username, password=password,
-                   name=name, second_name=second_name,
-                   nick=nick, city=city, role='user')
-    
-            app.logger.debug('db commiting')
             try:
+                            # User uploading folder creation
+                basedir = os.path.dirname(os.path.abspath(__file__))
+                user_path = os.path.join(basedir, app.config['UPLOAD_FOLDER'], username)
+            
+                app.logger.debug('data accepted')
+                msg = User(username=username, password=password,
+                   name=name, second_name=second_name,
+                   nick=nick, city=city, role='user',
+                   user_path = user_path,
+                   avatar='http://lorempixel.com/200/400/people')
+
+                app.logger.debug('db commiting')
                 db.session.add(msg)
+                os.mkdir(user_path)
                 db.session.commit()
                 app.logger.debug('success')
                 session['logged_in'] = True
@@ -166,8 +173,9 @@ def sign_up():
                 g.user = msg
                 login_user(g.user, force=True)
                 return redirect(url_for('root'))
-            except sqlalchemy.exc.IntegrityError:
+            except Exception as err:
                 flash('Error: ' + 'user ' + username + ' already exists')
+                app.logger.debug('Error occured: %s' % err)
         else:
             app.logger.debug('sign up validation falling')
             flash('Error: All the form fields are required. ')
@@ -185,14 +193,19 @@ def login():
         username = request.form['username']
         password = request.form['password']
         if form.validate_on_submit():
-            user_inf = User.query.filter_by(username=username).first()
-            session['logged_in'] = True
-            session['username'] = username
-            flash('You were logged in')
-            user = user_inf
-            login_user(user, force=True)
-            app.logger.debug('we are logged in as {}'.format(session.get('username')))
-            return redirect(url_for('root', username = username))
+            try:
+                user_inf = User.query.filter_by(username=username).first()
+                session['logged_in'] = True
+                session['username'] = username
+                flash('You were logged in')
+                user = user_inf
+                login_user(user, force=True)
+                app.logger.debug('we are logged in as {}'.format(session.get('username')))
+                return redirect(url_for('root', username = username))
+            except Exception as err:
+                flash('Login error')
+                app.logger.debug('Error occured: %s' % err)
+
         else:
             app.logger.debug('Login validation exception: {}, {}'.format(username, password))
             flash('Error: Please type correct data in fields!')
